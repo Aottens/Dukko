@@ -1,16 +1,8 @@
-[submodule "JUCE"]
-	path = JUCE
-	url = https://github.com/juce-framework/JUCE/
-	branch = develop
-[submodule "modules/melatonin_inspector"]
-	path = modules/melatonin_inspector
-	url = https://github.com/sudara/melatonin_inspector.git
-	branch = main
-[submodule "cmake"]
-	path = cmake
-	url = https://github.com/sudara/cmake-includes.git
-	branch = main
-[submodule "modules/clap-juce-extensions"]
-	path = modules/clap-juce-extensions
-	url = https://github.com/free-audio/clap-juce-extensions.git
-	branch = main
+# Dukko intentionally has no git submodules.
+#
+# Plan 02 replaced the upstream Pamplejuce submodules (JUCE, cmake-includes,
+# melatonin_inspector, clap-juce-extensions) with CPM-fetched dependencies
+# pinned in CMakeLists.txt. Reproducible builds, no submodule init dance.
+#
+# This file is kept (empty) so cloning Dukko does not produce confusing
+# "no .gitmodules" warnings from tools that expect it on a JUCE-flavored repo.
