@@ -108,8 +108,8 @@ CPMAddPackage(
 )
 # Phase 2 will link chowdsp::chowdsp_plugin_state once versioned-state work begins.
 
-# Melatonin Inspector — JUCE component inspector. CPM-fetched (was a git submodule
-# in upstream Pamplejuce). The repo has no release tags, so we pin to a specific
+# Melatonin Inspector — JUCE component inspector. CPM-fetched (was a submodule
+# in the source template). The repo has no release tags, so we pin to a specific
 # main HEAD SHA captured 2026-05-03. GIT_SHALLOW FALSE because shallow clone of
 # a SHA (not a tag/branch) fails. DOWNLOAD_ONLY because the upstream CMakeLists
 # assumes its directory is named "melatonin_inspector" (CPM extracts into

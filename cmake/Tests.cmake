@@ -1,5 +1,5 @@
 # Tests target driven by Catch2 v3.
-# Vendored from sudara/cmake-includes (MIT) — renamed RUN_PAMPLEJUCE_TESTS → RUN_DUKKO_TESTS.
+# Vendored from sudara/cmake-includes (MIT) — renamed RUN_*_TESTS guard to RUN_DUKKO_TESTS.
 
 # Required for ctest (which is just an easier way to run in cross-platform CI)
 # include(CTest) could be used too, but adds additional targets we don't care about

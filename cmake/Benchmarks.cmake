@@ -1,5 +1,5 @@
 # Benchmarks target driven by Catch2 v3.
-# Vendored from sudara/cmake-includes (MIT) — renamed RUN_PAMPLEJUCE_TESTS → RUN_DUKKO_TESTS.
+# Vendored from sudara/cmake-includes (MIT) — renamed RUN_*_TESTS guard to RUN_DUKKO_TESTS.
 
 file(GLOB_RECURSE BenchmarkFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/Catch2Main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/benchmarks/*.h")
 

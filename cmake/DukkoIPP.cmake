@@ -1,7 +1,7 @@
 # When present, use Intel IPP for performance on Windows, Linux, and macOS (x86_64 only).
 #
-# Vendored from sudara/cmake-includes (MIT) — renamed PAMPLEJUCE_IPP → DUKKO_IPP
-# per plan 01-01 SUMMARY (the test in tests/PluginBasics.cpp guards on DUKKO_IPP).
+# Vendored from sudara/cmake-includes (MIT) — renamed the IPP-detection define
+# to DUKKO_IPP per plan 01-01 SUMMARY (tests/PluginBasics.cpp guards on DUKKO_IPP).
 #
 # For Dukko v1 (arm64-only) this is effectively a no-op on macOS — IPP is x86_64
 # only. Kept for symmetry with the upstream template and for the Windows v2 milestone.

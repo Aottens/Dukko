@@ -1,6 +1,6 @@
 # Dukko intentionally has no git submodules.
 #
-# Plan 02 replaced the upstream Pamplejuce submodules (JUCE, cmake-includes,
+# Plan 02 replaced the four template-derived submodules (JUCE, cmake-includes,
 # melatonin_inspector, clap-juce-extensions) with CPM-fetched dependencies
 # pinned in CMakeLists.txt. Reproducible builds, no submodule init dance.
 #

@@ -2,9 +2,9 @@
 # Be sure the VERSION file has no trailing newline!
 # CURRENT_VERSION is later fed to JUCE so it shows up as plugin version in the IDE / DAW.
 #
-# Vendored from sudara/cmake-includes (MIT) — renamed Pamplejuce* → Dukko* per
-# plan 01-01 SUMMARY handoff (D-07 commit-divergence + plan 02 must populate
-# cmake/Dukko*.cmake).
+# Vendored from sudara/cmake-includes (MIT) — renamed the upstream auto-bump
+# option to DUKKO_AUTO_BUMP_PATCH_LEVEL per plan 01-01 SUMMARY handoff (D-07
+# commit-divergence + plan 02 must populate cmake/Dukko*.cmake).
 
 # Optional auto patch-level bumping from commit count (off by default).
 option(DUKKO_AUTO_BUMP_PATCH_LEVEL "Auto bump patch level based on commit count" OFF)
