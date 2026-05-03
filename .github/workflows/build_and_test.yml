@@ -63,8 +63,11 @@ jobs:
         # as top-level targets, each linking its own JUCE compile. Unbounded
         # `--parallel` builds three full JUCE trees simultaneously and OOMs the
         # runner into a swap-thrash deadlock (observed in run 25285852022).
-        # Scope to Dukko_All (VST3 + CLAP) and cap parallelism to core count.
-        run: cmake --build build --config Release --target Dukko_All --parallel 3
+        # Scope to the two plugin format targets and cap parallelism to core count.
+        # Note: Dukko_All only contains formats declared in juce_add_plugin's FORMATS
+        # list (VST3 here). The CLAP target is added later by clap_juce_extensions_plugin
+        # and is NOT included in Dukko_All — it must be built explicitly.
+        run: cmake --build build --config Release --target Dukko_VST3 --target Dukko_CLAP --parallel 3
 
       # BUILD-02 enforcement: fail fast in CI if the binary is not pure arm64.
       # `grep -w` matches the literal token `arm64` only — `arm64e` (Apple's
@@ -199,5 +202,6 @@ jobs:
 
       - name: Build (Debug + ASan)
         # Same OOM mitigation as the Release job; ASan instrumentation makes
-        # parallel JUCE-tree builds even more memory-hungry.
-        run: cmake --build build-debug --config Debug --target Dukko_All --parallel 3
+        # parallel JUCE-tree builds even more memory-hungry. Also includes the
+        # CLAP target explicitly (Dukko_All does not contain it).
+        run: cmake --build build-debug --config Debug --target Dukko_VST3 --target Dukko_CLAP --parallel 3
