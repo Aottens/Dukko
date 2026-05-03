@@ -19,16 +19,18 @@ audible glitches under normal use. Not showroom polish; not a toy either.
 
 ```
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
+cmake --build build --config Release --target Dukko_VST3 --target Dukko_CLAP
 ```
 
-The build auto-installs the VST3 bundle into `~/Library/Audio/Plug-Ins/VST3/` on
-macOS thanks to JUCE's `COPY_PLUGIN_AFTER_BUILD TRUE`. Restart your DAW (or
-trigger a plugin re-scan) to pick up the new build.
+The build auto-installs both the VST3 and CLAP bundles into
+`~/Library/Audio/Plug-Ins/{VST3,CLAP}/` on macOS thanks to JUCE's
+`COPY_PLUGIN_AFTER_BUILD TRUE`. Restart your DAW (or trigger a plugin re-scan)
+to pick up the new build.
 
-Plan 01 ships the rename / scaffold pass only — the tree is not yet buildable
-end-to-end. Plan 02 wires up JUCE 8 + clap-juce-extensions + chowdsp_utils via
-CPM and is what makes `cmake -B build` actually succeed.
+Phase 1 ships the build foundation + CI: the tree builds end-to-end on macOS
+arm64 and produces both VST3 and CLAP bundles, gated by pluginval strict-10 +
+clap-validator on every push. There is no DSP yet — the plugin instantiates
+silently. Phase 2 wires up parameters, state, and the ducker DSP.
 
 ## Status
 

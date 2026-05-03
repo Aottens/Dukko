@@ -2,7 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-#if (MSVC)
+#if defined(_MSC_VER)
 #include "ipps.h"
 #endif
 

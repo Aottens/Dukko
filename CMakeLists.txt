@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.25)
 
 # Dukko: lock to Apple Silicon arm64 + macOS 11 Big Sur deployment target.
-# Plan 01 ships v1 as arm64-only (PROJECT.md "Platform (v1)"); plan 02+ may
-# add x86_64 to this list once a Universal binary is wanted.
-set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "" FORCE)
-set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "" FORCE)
+# Phase 1 ships v1 as arm64-only (PROJECT.md "Platform (v1)"); a future
+# Universal-binary milestone may extend this. CACHE STRING (no FORCE) so a
+# user-supplied -DCMAKE_OSX_ARCHITECTURES override actually wins. CI passes
+# the flag explicitly. WR-06 / code review #6.
+set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build architectures")
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS version")
 
 # This tells cmake we have goodies in the /cmake folder.
 # Plan 02 vendored cmake-includes (sudara/cmake-includes, MIT) inline as

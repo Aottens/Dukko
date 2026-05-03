@@ -32,6 +32,11 @@ on:
   pull_request:
     branches: ["**"]
 
+# Least-privilege token: this is a build-and-validate workflow that does not
+# write to the repo, push tags, or call any GitHub API. WR-02 / code review #1.
+permissions:
+  contents: read
+
 defaults:
   run:
     shell: bash
