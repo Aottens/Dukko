@@ -13,7 +13,7 @@ Audio-thread discipline (no allocations, no locks, no denormals, smoothed parame
 
 ## Phases
 
-- [ ] **Phase 1: Build foundation & CI** — Pamplejuce-scaffolded VST3 + CLAP build for Apple Silicon, with pluginval-strict-10 green on every push and LICENSES.md tracked from day one.
+- [x] **Phase 1: Build foundation & CI** — Pamplejuce-scaffolded VST3 + CLAP build for Apple Silicon, with pluginval-strict-10 green on every push and LICENSES.md tracked from day one.
 - [ ] **Phase 2: DSP scaffold & state recall** — Audio-thread-safe passthrough plugin with smoothed depth/wet-dry, soft bypass, and Bitwig save/reopen recalling all parameters intact.
 - [ ] **Phase 3: Tempo-sync engine with atomic curve snapshot** — Hardcoded sine-curve duck locked to host PPQ via per-block phase derivation, with the atomic CurveSnapshot publication path proven on the audio thread.
 - [ ] **Phase 4: Curve UI & factory presets** — Read-only curve display with live playhead, Kickstart-1 family factory curves baked as static data, click-free preset switching, and resizable UI at 100/125/150%.
@@ -35,7 +35,7 @@ Audio-thread discipline (no allocations, no locks, no denormals, smoothed parame
 - [x] 01-01-PLAN.md — Pamplejuce ingestion + Dukko rename + bake permanent identifiers (BUILD-01, BUILD-05)
 - [x] 01-02-PLAN.md — CPM dep wiring (JUCE 8.0.12, clap-juce-extensions @ SHA, chowdsp_utils v2.4.0) + LICENSES.md (BUILD-03, QUAL-05)
 - [x] 01-03-PLAN.md — GitHub Actions workflow: Release+validators job + Debug+ASan job (BUILD-04, QUAL-01)
-- [ ] 01-04-PLAN.md — Local build + arm64 verification + GitHub repo + first push + manual Bitwig load (BUILD-02)
+- [x] 01-04-PLAN.md — Local build + arm64 verification + GitHub repo + first push + manual Bitwig load (BUILD-02)
 
 ### Phase 2: DSP scaffold & state recall
 **Goal**: An audio-thread-safe passthrough plugin with depth, wet/dry, and click-free soft bypass, where Bitwig save → close → reopen restores every parameter exactly.

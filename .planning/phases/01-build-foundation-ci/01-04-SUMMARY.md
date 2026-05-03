@@ -12,7 +12,7 @@ provides:
   - "Verified end-to-end Release build: cmake -B build && cmake --build build produces both Dukko.vst3 and Dukko.clap on Apple Silicon (arm64)"
   - "Verified COPY_PLUGIN_AFTER_BUILD installs both bundles to ~/Library/Audio/Plug-Ins/{VST3,CLAP}/ (TBD #4 resolved — covers BOTH formats)"
   - "Verified JUCE auto ad-hoc-signs both bundles with Identifier=com.dukkoaudio.dukko (TBD #5 resolved — no extra codesign command needed)"
-  - "Verified pluginval strict-10 PASSES on the unmodified Pamplejuce shell (Pitfall 3 did NOT trigger — no source-level state-round-trip fix required for Phase 1)"
+  - "Verified pluginval strict-10 PASSES on both the unmodified Pamplejuce shell AND the post-fix processor (Pitfall 3 DID trigger via clap-validator's chunked state tests, fixed by writing a named ValueTree in getStateInformation/setStateInformation — see commit 5ff5141)"
   - "Verified actual VST3/CLAP build paths match the conventional Pamplejuce paths the workflow YAML hardcodes (TBD #6 resolved — workflow needs no edit)"
   - "README.md badge URL points at https://github.com/Aottens/Dukko/actions/workflows/build_and_test.yml (substitution committed)"
 affects:
@@ -28,9 +28,11 @@ key-files:
     - ".planning/phases/01-build-foundation-ci/PHASE-SUMMARY.md (Phase 1 retrospective)"
   modified:
     - "README.md — substituted Aottens for <your-org> in badge URL (both occurrences in one line)"
+    - ".github/workflows/build_and_test.yml — post-merge fixes: cap parallelism, scope to Dukko_VST3+Dukko_CLAP, drop Steinberg validator step, correct clap-validator URL/path (commits 6e784c1, d407aa4, f2a92e5, 9ee46fe)"
+    - "source/PluginProcessor.cpp — post-merge fix: write round-trippable ValueTree state (Pitfall 3, commit 5ff5141)"
   deleted: []
 decisions:
-  - "Pitfall 3 did NOT trigger — pluginval strict-10 PASSED out of the box on the unmodified Pamplejuce shell, so source/PluginProcessor.cpp was NOT modified. Phase 2 may still want to replace the JUCE-template stub state handling with chowdsp_plugin_state for versioned recall, but that is now an enhancement, not a Phase-1 emergency fix."
+  - "Pitfall 3 DID trigger via clap-validator (not pluginval) — JUCE's VST3 wrapper accepts empty state but clap-juce-extensions' CLAP wrapper does chunked-read state tests that fail on empty MemoryBlocks. Resolved post-merge in commit 5ff5141 by writing a named ValueTree in getStateInformation/setStateInformation. Phase 2 should replace this with chowdsp_plugin_state for versioned recall."
   - "TBD #6 (CLAP/VST3 output paths) RESOLVED to the conventional Pamplejuce paths the workflow already references — no .github/workflows/build_and_test.yml edit needed: build/Dukko_artefacts/Release/VST3/Dukko.vst3 and build/Dukko_artefacts/Release/CLAP/Dukko.clap match exactly."
   - "TBD #4 (COPY_PLUGIN_AFTER_BUILD covers CLAP) RESOLVED yes — JUCE's install-driver script copied BOTH bundles to ~/Library/Audio/Plug-Ins/{VST3,CLAP}/ in a single build invocation. No add_custom_command(POST_BUILD) for CLAP needed."
   - "TBD #5 (ad-hoc codesign) RESOLVED — JUCE's COPY_PLUGIN_AFTER_BUILD path automatically runs `codesign --sign -` on both bundles (visible in build log: 'Replacing invalid signature with ad-hoc signature' twice). `codesign -dv` confirms Signature=adhoc on both installed bundles. No post-build codesign add_custom_command needed."
@@ -152,19 +154,26 @@ QUAL-01's "pluginval strict-10 must pass" gate is therefore CLOSED locally; the 
 
 ### First Actions run URL + conclusion
 
-**PENDING — deferred to orchestrator post-merge.**
+**RESOLVED — green after 5 fix commits.**
 
-Per orchestrator context:
+- **First green run:** https://github.com/Aottens/Dukko/actions/runs/25288354439 (head SHA `5ff5141`)
+- **Conclusion:** `success` (both jobs)
+- **Duration:** ~3.5 min Release + validators, ~2 min Debug+ASan (warm CPM cache)
 
-> "DO NOT: run `git push` from this worktree. DO NOT: run `gh run watch` from this worktree. The orchestrator will run `git push origin main` after merging your worktree, then watch the CI run and report back."
+Required orchestrator-side fixes between worktree-merge push and first green:
 
-After the orchestrator merges this worktree to main and pushes, the URL will be `https://github.com/Aottens/Dukko/actions` (run-id assigned at push time). Expected outcome on first push: GREEN. Risk surface (per plan-03 SUMMARY's "Outstanding TBDs Handed Forward"):
+| # | Commit | Cause |
+|---|--------|-------|
+| 1 | `6e784c1` fix(01-04): cap CI parallelism + scope build to Dukko_All to prevent OOM | Run 25285852022 deadlocked at `Built target Dukko_vst3_helper` for 60 min. Pamplejuce ships `Tests` + `Benchmarks` as top-level targets each linking their own JUCE compile; unbounded `--parallel` on the macos-14 runner (3 cores / 14 GB) tried 3 simultaneous JUCE trees → OOM swap thrash. Fix: `--target Dukko_All --parallel 3`. |
+| 2 | `d407aa4` fix(01-04): explicitly build Dukko_CLAP target in CI | `Dukko_All` only contains formats from `juce_add_plugin`'s `FORMATS` list (VST3 here). The CLAP target is added later by `clap_juce_extensions_plugin` and is NOT in `Dukko_All`. Fix: `--target Dukko_VST3 --target Dukko_CLAP`. |
+| 3 | `f2a92e5` fix(01-04): defer Steinberg VST3 validator to Phase 6 | Plan 01-03's executor wired the Steinberg step on the assumption JUCE's vendored VST3 SDK exposes a `validator` CMake target. **It does not** — JUCE bundles SDK headers but not the standalone tool. RESEARCH.md TBD #5 had asked exactly this and was incorrectly resolved. Per ROADMAP, Steinberg validator is Phase 6's gate (QUAL-02); restored that split. Phase 1 keeps pluginval + clap-validator. |
+| 4 | `9ee46fe` fix(01-04): correct clap-validator asset name + binary path | Plan 01-03's executor guessed `clap-validator-0.3.2-macos-arm64.tar.gz`. Actual release asset is `clap-validator-0.3.2-macos-universal.tar.gz` (universal binary), and the tarball expands to `binaries/clap-validator`, not the bare `clap-validator`. Fix: corrected URL + `binaries/` prefix on chmod and run paths. |
+| 5 | `5ff5141` fix(01-04): write round-trippable state in PluginProcessor (Pitfall 3) | clap-validator's `state-reproducibility-{basic,flush,null-cookies}` all FAILED — `clap_plugin_state::load()` returned false because the Pamplejuce stub `getStateInformation` produced an empty MemoryBlock. Plan 01-04 Task 1 Step 6 documented this fix verbatim, referencing RESEARCH.md Pitfall 3. **The original 01-04-SUMMARY's claim that "Pitfall 3 did NOT trigger" was wrong** — it was only true against pluginval's VST3 path (the JUCE VST3 wrapper is permissive about empty state); the CLAP wrapper does stricter chunked-read tests that exposed the real issue. Fixed by writing a named ValueTree on save and reading it back on load. Phase 2's chowdsp_plugin_state will replace these stubs with versioned state. |
 
-1. **clap-validator asset filename mismatch** — the workflow hardcodes `clap-validator-0.3.2-macos-arm64.tar.gz`. If the actual published asset has a slightly different filename, the curl step fails with HTTP 404. Fix is a one-line workflow edit on a follow-up commit (orchestrator can do this without a new plan).
-2. **Steinberg validator path** — workflow uses dynamic `find build/_deps -name validator -type f -perm -u+x | head -1`. Robust to JUCE point-release reshuffles; should not fail.
-3. **CPM cold cache on first push** — first run will be slow (5–10 min); subsequent runs will hit the cache and finish in ~2–3 min.
-
-If the first run fails for any of the above, the orchestrator should patch the workflow inline (per plan 03's interfaces note) and re-push. Do NOT downgrade pluginval strictness — strict-10 is non-negotiable per QUAL-01.
+Lessons for future phases:
+- **Plan 03 author "verified" the workflow with `python3 -c yaml.safe_load(...)` but never tested an actual GitHub Actions run.** YAML validity ≠ workflow correctness. Future CI-authoring plans should require a dry-run push and observe before declaring done.
+- **TBD #5 (Steinberg validator path) was resolved by guessing a `find` glob without verification.** Future TBDs whose resolution requires runtime evidence must explicitly demand it (configure + inspect, not just plan-stage research).
+- **Pitfall 3 IS triggered by clap-validator even when pluginval passes.** Phase 2 should treat the JUCE-template state stubs as load-bearing — the current minimal ValueTree write is sufficient for Phase 1 but chowdsp_plugin_state is the proper fix.
 
 ### Bitwig manual load result (VST3 + CLAP)
 
