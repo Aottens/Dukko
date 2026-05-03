@@ -1,12 +1,18 @@
 # Dukko CI — Phase 1 plan 01-03
 #
-# Gates every push and every PR with the full Phase 1 validator matrix:
+# Gates every push and every PR with the Phase 1 validator matrix:
 #   1. Release build + arm64-architecture verification
-#   2. pluginval at strictness level 10 against the VST3
-#   3. Steinberg's official VST3 validator (located dynamically under build/_deps)
-#   4. clap-validator 0.3.2 against the CLAP
-#   5. LICENSES.md staleness guard (every dir in build/_deps must be tracked)
-#   6. Workflow artifact upload (Dukko.vst3 + Dukko.clap, 30-day retention)
+#   2. pluginval at strictness level 10 against the VST3 (QUAL-01)
+#   3. clap-validator 0.3.2 against the CLAP
+#   4. LICENSES.md staleness guard (every dir in build/_deps must be tracked)
+#   5. Workflow artifact upload (Dukko.vst3 + Dukko.clap, 30-day retention)
+#
+# Steinberg VST3 validator (QUAL-02): originally opted-in for Phase 1 via D-10
+# on the assumption JUCE's vendored VST3 SDK exposes a `validator` CMake target.
+# It does not — JUCE bundles SDK headers but not the standalone tool. Per the
+# original ROADMAP, Steinberg validator is Phase 6's gate; deferred back there.
+# Phase 6 will either fetch steinbergmedia/vst3sdk via CPM and build its
+# `validator` target, or download a vetted prebuilt binary.
 #
 # In parallel: a Debug build with AddressSanitizer (compile-only in Phase 1; Phase 2
 # lights it up by adding audio-thread invariants).
@@ -95,25 +101,7 @@ jobs:
             --output-dir ./pluginval-results \
             "build/Dukko_artefacts/Release/VST3/Dukko.vst3"
 
-      # ---- Validator 2: Steinberg VST3 validator (D-10) -----------------------
-      # The validator binary is built as part of JUCE's vendored VST3 SDK fork.
-      # Its exact path under build/_deps/ depends on JUCE's CMake layout, which
-      # may shift across JUCE 8.x point releases. Resolve dynamically so the
-      # workflow is robust to upstream reshuffles. If `find` returns empty,
-      # the step exits non-zero loudly rather than silently skipping.
-      - name: Run Steinberg VST3 validator
-        run: |
-          set -e
-          VALIDATOR=$(find build/_deps -name validator -type f -perm -u+x | head -1)
-          if [ -z "$VALIDATOR" ]; then
-            echo "FATAL: Steinberg VST3 validator not found under build/_deps/"
-            find build/_deps -name validator -type f
-            exit 1
-          fi
-          echo "Using Steinberg validator at: $VALIDATOR"
-          "$VALIDATOR" "build/Dukko_artefacts/Release/VST3/Dukko.vst3"
-
-      # ---- Validator 3: clap-validator (D-10) ---------------------------------
+      # ---- Validator 2: clap-validator (D-10) ---------------------------------
       # Pinned to the standard GitHub release-asset URL pattern for tag 0.3.2.
       # If the asset filename differs from this convention on first push, the
       # curl step fails loudly with HTTP 404 — patch the URL inline as a
