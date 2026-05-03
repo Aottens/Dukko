@@ -123,66 +123,67 @@ Deferred to v2 (Windows / commercial release / advanced features). Tracked but n
 | Built-in compressor / EQ / saturation | Anti-features — would push Dukko into VolumeShaper / SoundToys territory and dilute focus |
 | AI features | Anti-feature; doesn't serve "click-and-go" core value |
 | Free-resize UI handle (drag corner) | Use 100/125/150% presets for v1; free-resize is a v2 polish item |
-| In-plugin undo system | Use host-mediated undo (cheaper, sufficient); revisit if Phase D testing shows insufficient |
+| In-plugin undo system | Use host-mediated undo (cheaper, sufficient); revisit if Phase 5 testing shows insufficient |
 
 ## Traceability
 
-Phase mapping is filled in by the roadmapper. All v1 requirements must be mapped to exactly one phase.
+Phase mapping fixed by roadmapper on 2026-05-03. Every v1 requirement maps to exactly one phase.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUILD-01 | TBD | Pending |
-| BUILD-02 | TBD | Pending |
-| BUILD-03 | TBD | Pending |
-| BUILD-04 | TBD | Pending |
-| BUILD-05 | TBD | Pending |
-| DSP-01 | TBD | Pending |
-| DSP-02 | TBD | Pending |
-| DSP-03 | TBD | Pending |
-| DSP-04 | TBD | Pending |
-| DSP-05 | TBD | Pending |
-| DSP-06 | TBD | Pending |
-| DSP-07 | TBD | Pending |
-| DSP-08 | TBD | Pending |
-| SYNC-01 | TBD | Pending |
-| SYNC-02 | TBD | Pending |
-| SYNC-03 | TBD | Pending |
-| SYNC-04 | TBD | Pending |
-| SYNC-05 | TBD | Pending |
-| CURV-01 | TBD | Pending |
-| CURV-02 | TBD | Pending |
-| CURV-03 | TBD | Pending |
-| CURV-04 | TBD | Pending |
-| CURV-05 | TBD | Pending |
-| CURV-06 | TBD | Pending |
-| CURV-07 | TBD | Pending |
-| STAT-01 | TBD | Pending |
-| STAT-02 | TBD | Pending |
-| STAT-03 | TBD | Pending |
-| STAT-04 | TBD | Pending |
-| STAT-05 | TBD | Pending |
-| STAT-06 | TBD | Pending |
-| UI-01 | TBD | Pending |
-| UI-02 | TBD | Pending |
-| UI-03 | TBD | Pending |
-| UI-04 | TBD | Pending |
-| UI-05 | TBD | Pending |
-| UI-06 | TBD | Pending |
-| UI-07 | TBD | Pending |
-| UI-08 | TBD | Pending |
-| UI-09 | TBD | Pending |
-| UI-10 | TBD | Pending |
-| QUAL-01 | TBD | Pending |
-| QUAL-02 | TBD | Pending |
-| QUAL-03 | TBD | Pending |
-| QUAL-04 | TBD | Pending |
-| QUAL-05 | TBD | Pending |
+| BUILD-01 | Phase 1 | Pending |
+| BUILD-02 | Phase 1 | Pending |
+| BUILD-03 | Phase 1 | Pending |
+| BUILD-04 | Phase 1 | Pending |
+| BUILD-05 | Phase 1 | Pending |
+| DSP-01 | Phase 3 | Pending |
+| DSP-02 | Phase 2 | Pending |
+| DSP-03 | Phase 2 | Pending |
+| DSP-04 | Phase 2 | Pending |
+| DSP-05 | Phase 2 | Pending |
+| DSP-06 | Phase 2 | Pending |
+| DSP-07 | Phase 2 | Pending |
+| DSP-08 | Phase 6 | Pending |
+| SYNC-01 | Phase 3 | Pending |
+| SYNC-02 | Phase 3 | Pending |
+| SYNC-03 | Phase 3 | Pending |
+| SYNC-04 | Phase 3 | Pending |
+| SYNC-05 | Phase 3 | Pending |
+| CURV-01 | Phase 3 | Pending |
+| CURV-02 | Phase 3 | Pending |
+| CURV-03 | Phase 3 | Pending |
+| CURV-04 | Phase 4 | Pending |
+| CURV-05 | Phase 5 | Pending |
+| CURV-06 | Phase 4 | Pending |
+| CURV-07 | Phase 4 | Pending |
+| STAT-01 | Phase 2 | Pending |
+| STAT-02 | Phase 2 | Pending |
+| STAT-03 | Phase 2 | Pending |
+| STAT-04 | Phase 2 | Pending |
+| STAT-05 | Phase 2 | Pending |
+| STAT-06 | Phase 2 | Pending |
+| UI-01 | Phase 4 | Pending |
+| UI-02 | Phase 4 | Pending |
+| UI-03 | Phase 4 | Pending |
+| UI-04 | Phase 5 | Pending |
+| UI-05 | Phase 5 | Pending |
+| UI-06 | Phase 5 | Pending |
+| UI-07 | Phase 5 | Pending |
+| UI-08 | Phase 6 | Pending |
+| UI-09 | Phase 5 | Pending |
+| UI-10 | Phase 5 | Pending |
+| QUAL-01 | Phase 1 | Pending |
+| QUAL-02 | Phase 6 | Pending |
+| QUAL-03 | Phase 6 | Pending |
+| QUAL-04 | Phase 6 | Pending |
+| QUAL-05 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 46 total
-- Mapped to phases: 0 (filled by roadmapper)
-- Unmapped: 46 ⏳ (pending roadmap)
+- Mapped to phases: 46 ✓
+- Unmapped: 0
+- Duplicated across phases: 0
 
 ---
 *Requirements defined: 2026-05-03*
-*Last updated: 2026-05-03 after initial definition*
+*Last updated: 2026-05-03 — traceability filled in by roadmapper (6 phases, 100% coverage)*
