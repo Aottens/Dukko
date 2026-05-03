@@ -144,14 +144,14 @@ jobs:
 
       # ---- Artifact upload (D-12) ---------------------------------------------
       - name: Upload VST3 artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Dukko-VST3
           path: build/Dukko_artefacts/Release/VST3/Dukko.vst3
           retention-days: 30
 
       - name: Upload CLAP artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Dukko-CLAP
           path: build/Dukko_artefacts/Release/CLAP/Dukko.clap
