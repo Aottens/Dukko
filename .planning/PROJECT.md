@@ -122,4 +122,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-03 after initialization (research integrated, plugin name finalized as Dukko)*
+*Last updated: 2026-05-03 after Phase 1 close (build foundation + CI green; both VST3 and CLAP load in Bitwig as native arm64; no product requirements validated yet — Phase 2 starts the DSP)*
