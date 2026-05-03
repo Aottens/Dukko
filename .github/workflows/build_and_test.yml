@@ -59,7 +59,12 @@ jobs:
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
 
       - name: Build (Release)
-        run: cmake --build build --config Release --parallel
+        # macos-14 runner = 3 cores / 14 GB RAM. Pamplejuce ships Tests + Benchmarks
+        # as top-level targets, each linking its own JUCE compile. Unbounded
+        # `--parallel` builds three full JUCE trees simultaneously and OOMs the
+        # runner into a swap-thrash deadlock (observed in run 25285852022).
+        # Scope to Dukko_All (VST3 + CLAP) and cap parallelism to core count.
+        run: cmake --build build --config Release --target Dukko_All --parallel 3
 
       # BUILD-02 enforcement: fail fast in CI if the binary is not pure arm64.
       # `grep -w` matches the literal token `arm64` only — `arm64e` (Apple's
@@ -193,4 +198,6 @@ jobs:
             -DCMAKE_MODULE_LINKER_FLAGS="-fsanitize=address"
 
       - name: Build (Debug + ASan)
-        run: cmake --build build-debug --config Debug --parallel
+        # Same OOM mitigation as the Release job; ASan instrumentation makes
+        # parallel JUCE-tree builds even more memory-hungry.
+        run: cmake --build build-debug --config Debug --target Dukko_All --parallel 3
