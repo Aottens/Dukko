@@ -2,7 +2,7 @@
 
 Tempo-locked, click-and-go ducking for Bitwig on Apple Silicon — VST3 + CLAP.
 
-[![Build & Validate](https://github.com/<your-org>/Dukko/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/<your-org>/Dukko/actions/workflows/build_and_test.yml)
+[![Build & Validate](https://github.com/Aottens/Dukko/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/Aottens/Dukko/actions/workflows/build_and_test.yml)
 
 ## What this is
 
