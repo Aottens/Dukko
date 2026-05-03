@@ -15,12 +15,12 @@ TEST_CASE ("Plugin instance", "[instance]")
     SECTION ("name")
     {
         CHECK_THAT (testPlugin.getName().toStdString(),
-            Catch::Matchers::Equals ("Pamplejuce Demo"));
+            Catch::Matchers::Equals ("Dukko"));
     }
 }
 
 
-#ifdef PAMPLEJUCE_IPP
+#ifdef DUKKO_IPP
     #include <ipp.h>
 
 TEST_CASE ("IPP version", "[ipp]")

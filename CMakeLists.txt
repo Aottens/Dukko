@@ -1,41 +1,59 @@
 cmake_minimum_required(VERSION 3.25)
 
-# This tells cmake we have goodies in the /cmake folder
+# Dukko: lock to Apple Silicon arm64 + macOS 11 Big Sur deployment target.
+# Plan 01 ships v1 as arm64-only (PROJECT.md "Platform (v1)"); plan 02+ may
+# add x86_64 to this list once a Universal binary is wanted.
+set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "" FORCE)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "" FORCE)
+
+# This tells cmake we have goodies in the /cmake folder.
+# The cmake/ directory is currently empty (the upstream cmake-includes submodule
+# was not pulled with the tarball). Plan 02 will populate it with Dukko-prefixed
+# equivalents of the upstream sudara/cmake-includes helpers.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include (PamplejuceVersion)
+include (DukkoVersion)
 
 # Modern concise way to add dependencies to your project
 include (CPM)
 
 # Configures universal binaries and decides which version of macOS to support
-include(PamplejuceMacOS)
+include(DukkoMacOS)
 
 # Couple tweaks that IMO should be JUCE defaults
 include(JUCEDefaults)
 
-# Change me!
-# This is the internal name of the project and the name of JUCE's shared code target
-# Note: This cannot have spaces (it may be 2024, but you can't have it all!)
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs display)
-set(PROJECT_NAME "Pamplejuce")
+# ==============================================================================
+# PERMANENT — DO NOT CHANGE — see D-01..D-04 in .planning/phases/01-build-foundation-ci/01-CONTEXT.md
+#
+# These four values are baked into the plugin binary and the VST3/CLAP manifests.
+# Once any Bitwig (or other host) project saves a reference to these IDs, changing
+# them will make every project that ever loaded Dukko report "plugin missing":
+#   - PROJECT_NAME / PRODUCT_NAME    = "Dukko"                    (D-05)
+#   - COMPANY_NAME (manufacturer)    = "Dukko Audio"              (D-01)
+#   - PLUGIN_MANUFACTURER_CODE       = "Dukk"                     (D-02)
+#   - PLUGIN_CODE                    = "Dkk1"                     (D-03)
+#   - BUNDLE_ID / CLAP_ID            = "com.dukkoaudio.dukko"     (D-04)
+# ==============================================================================
 
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
-# You can also just have it be the same thing as PROJECT_NAME
-# You may want to append the major version on the end of this (and PROJECT_NAME) ala:
-#   set(PROJECT_NAME "MyPlugin_v${MAJOR_VERSION}")
-# Doing so enables major versions to show up in IDEs and DAWs as separate plugins
-# allowing you to change parameters and behavior without breaking existing user projects
-set(PRODUCT_NAME "Pamplejuce Demo")
+# Internal name of the project and the name of JUCE's shared code target.
+# Cannot have spaces. PRODUCT_NAME (below) is what the DAW displays.
+set(PROJECT_NAME "Dukko")
 
-# Change me! Used for the MacOS bundle name and Installers
-set(COMPANY_NAME "Pamplejuce Company")
+# What the DAW displays. For Dukko, both are the same — the product is just "Dukko".
+set(PRODUCT_NAME "Dukko")
 
-# Change me! Used for the MacOS bundle identifier (and signing)
-set(BUNDLE_ID "com.pamplejuce.pamplejuce")
+# Used for the macOS bundle name, installers, and the AU/VST3/CLAP manufacturer
+# field. Bitwig groups plugins by manufacturer in its browser using this string.
+set(COMPANY_NAME "Dukko Audio")
 
-# Change me! Set the plugin formats you want built
-# Valid choices: AAX Unity VST VST3 AU AUv3 Standalone
-set(FORMATS Standalone AU VST3 AUv3)
+# macOS bundle identifier (and code-signing identity). Also reused as CLAP_ID
+# when clap-juce-extensions is wired in plan 02.
+set(BUNDLE_ID "com.dukkoaudio.dukko")
+
+# Plugin formats. v1 ships VST3 only via this list; CLAP is wired separately
+# through clap-juce-extensions in plan 02. AU/AAX/Standalone are explicitly
+# out of scope per PROJECT.md "Out of Scope".
+set(FORMATS VST3)
 
 # Force JUCE to work with sccache
 # instruct MSVC to embed debug info (/Z7) instead of emitting a .pdb
@@ -46,16 +64,15 @@ set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded CACHE STRING "" FORCE)
 project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
 
 # Log build environment info (after project() so compiler info is available)
-include(PamplejuceLog)
+include(DukkoLog)
 
-# JUCE is setup as a submodule in the /JUCE folder
-# Locally, you must run `git submodule update --init --recursive` once
-# and later `git submodule update --remote --merge` to keep it up to date
-# On Github Actions, this is done as a part of actions/checkout
+# JUCE is setup as a submodule in the /JUCE folder.
+# Plan 02 replaces this with a CPMAddPackage(...) call pinned to a JUCE 8.0.x tag.
 add_subdirectory(JUCE)
 
-# Add CLAP format
-add_subdirectory(modules/clap-juce-extensions EXCLUDE_FROM_ALL)
+# CLAP support (clap-juce-extensions) is added in plan 02.
+# Do NOT re-add the add_subdirectory(modules/clap-juce-extensions) call here
+# until plan 02 wires the dependency via CPM.
 
 # Add any other modules you want modules here, before the juce_add_plugin call
 # juce_add_module(modules/my_module)
@@ -68,37 +85,31 @@ juce_add_plugin("${PROJECT_NAME}"
     # Icons for the standalone app
     ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/icon.png"
 
-    # Change me!
+    # PERMANENT — see D-01..D-04 comment block above.
     COMPANY_NAME "${COMPANY_NAME}"
     BUNDLE_ID "${BUNDLE_ID}"
 
     # On MacOS, plugin is copied to /Users/yourname/Library/Audio/Plug-Ins/
+    # D-09: KEEP TRUE — auto-install into ~/Library/Audio/Plug-Ins/VST3/ on every
+    # local build so Bitwig picks it up without a manual copy step.
     COPY_PLUGIN_AFTER_BUILD TRUE
 
-    # Change me!
-    # A four-character plugin id
-    # First character MUST be uppercase for AU formats
-    PLUGIN_MANUFACTURER_CODE Pamp
+    # PERMANENT — D-02. Four-character manufacturer code; first char uppercase.
+    PLUGIN_MANUFACTURER_CODE Dukk
 
-    # Change me!
-    # A unique four-character plugin id
-    # Note: this must have at least one upper-case character
-    PLUGIN_CODE P001
+    # PERMANENT — D-03. Four-character plugin code; at least one uppercase char.
+    PLUGIN_CODE Dkk1
     FORMATS "${FORMATS}"
 
-    # The name of your final executable
-    # This is how it's listed in the DAW
-    # This can be different from PROJECT_NAME and can have spaces!
-    # You might want to use v${MAJOR_VERSION} here once you go to v2...
+    # The name of your final executable. This is how it's listed in the DAW.
     PRODUCT_NAME "${PRODUCT_NAME}")
 
 # This lets us use our code in both the JUCE targets and our Test target
 # Without running into ODR violations
 add_library(SharedCode INTERFACE)
 
-clap_juce_extensions_plugin(TARGET "${PROJECT_NAME}"
-    CLAP_ID "${BUNDLE_ID}"
-    CLAP_FEATURES audio-effect)
+# clap_juce_extensions_plugin(...) is added in plan 02 alongside the
+# add_subdirectory call above.
 
 # Enable fast math, C++20 and a few other target defaults
 include(SharedCodeDefaults)
@@ -135,14 +146,14 @@ target_compile_definitions(SharedCode
     VERSION="${CURRENT_VERSION}"
 
     # JucePlugin_Name is for some reason doesn't use the nicer PRODUCT_NAME
-    PRODUCT_NAME_WITHOUT_VERSION="Pamplejuce"
+    PRODUCT_NAME_WITHOUT_VERSION="Dukko"
 )
 
 # Link to any other modules you added (with juce_add_module) here!
 # Usually JUCE modules must have PRIVATE visibility
 # See https://github.com/juce-framework/JUCE/blob/master/docs/CMake%20API.md#juce_add_module
-# However, with Pamplejuce, you'll link modules to SharedCode with INTERFACE visibility
-# This allows the JUCE plugin targets and the Tests target to link against it
+# In Dukko's CMake layout, modules link to SharedCode with INTERFACE visibility
+# so JUCE plugin targets and the Tests target both pick them up.
 target_link_libraries(SharedCode
     INTERFACE
     Assets
@@ -160,7 +171,7 @@ target_link_libraries(SharedCode
 target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode)
 
 # IPP support, comment out to disable
-include(PamplejuceIPP)
+include(DukkoIPP)
 
 # Everything related to the tests target
 include(Tests)
