@@ -163,19 +163,24 @@ juce::AudioProcessorEditor* PluginProcessor::createEditor()
 }
 
 //==============================================================================
+// Phase 1 minimum-viable round-trippable state. clap-validator's
+// state-reproducibility tests call clap_plugin_state::load() on a chunked
+// reader (e.g. 17-byte reads) and fail if load() returns false on the empty
+// buffer the Pamplejuce stubs produced. Writing a named ValueTree gives
+// load() a non-empty stream to deserialize cleanly. Phase 2 replaces both
+// methods with chowdsp_plugin_state for versioned state.
 void PluginProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused (destData);
+    juce::ValueTree state ("DukkoState");
+    juce::MemoryOutputStream stream (destData, false);
+    state.writeToStream (stream);
 }
 
 void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused (data, sizeInBytes);
+    juce::MemoryInputStream stream (data, static_cast<size_t> (sizeInBytes), false);
+    auto state = juce::ValueTree::readFromStream (stream);
+    juce::ignoreUnused (state);
 }
 
 //==============================================================================
