@@ -14,7 +14,7 @@ Audio-thread discipline (no allocations, no locks, no denormals, smoothed parame
 ## Phases
 
 - [x] **Phase 1: Build foundation & CI** — Pamplejuce-scaffolded VST3 + CLAP build for Apple Silicon, with pluginval-strict-10 green on every push and LICENSES.md tracked from day one.
-- [ ] **Phase 2: DSP scaffold & state recall** — Audio-thread-safe passthrough plugin with smoothed depth/wet-dry, soft bypass, and Bitwig save/reopen recalling all parameters intact.
+- [x] **Phase 2: DSP scaffold & state recall** — Audio-thread-safe passthrough plugin with smoothed depth/wet-dry, soft bypass, and Bitwig save/reopen recalling all parameters intact.
 - [ ] **Phase 3: Tempo-sync engine with atomic curve snapshot** — Hardcoded sine-curve duck locked to host PPQ via per-block phase derivation, with the atomic CurveSnapshot publication path proven on the audio thread.
 - [ ] **Phase 4: Curve UI & factory presets** — Read-only curve display with live playhead, Kickstart-1 family factory curves baked as static data, click-free preset switching, and resizable UI at 100/125/150%.
 - [ ] **Phase 5: Editable curve & user-curve serialization** — User can drag/add/delete points and adjust tension on one user-curve slot, with edits click-free and persisted across Bitwig save/load.
