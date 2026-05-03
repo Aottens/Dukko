@@ -28,3 +28,11 @@ cmake-build-debug
 cmake-build-release
 cmake-build-relwithdebinfo
 packaging/Output/*
+
+# Dukko additions
+build/
+*.xcodeproj/
+_deps/
+.idea/
+.vscode/
+pluginval-results/
