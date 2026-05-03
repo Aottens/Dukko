@@ -102,19 +102,19 @@ jobs:
             "build/Dukko_artefacts/Release/VST3/Dukko.vst3"
 
       # ---- Validator 2: clap-validator (D-10) ---------------------------------
-      # Pinned to the standard GitHub release-asset URL pattern for tag 0.3.2.
-      # If the asset filename differs from this convention on first push, the
-      # curl step fails loudly with HTTP 404 — patch the URL inline as a
-      # one-liner per plan 04 fallback.
+      # Asset name: `clap-validator-0.3.2-macos-universal.tar.gz` (verified against
+      # the actual release on free-audio/clap-validator). The macOS asset is a
+      # universal binary, not arm64-only — it runs natively on Apple Silicon.
+      # The tarball expands to `binaries/clap-validator`.
       - name: Download clap-validator 0.3.2
         run: |
           curl -L -o clap-validator.tar.gz \
-            "https://github.com/free-audio/clap-validator/releases/download/0.3.2/clap-validator-0.3.2-macos-arm64.tar.gz"
+            "https://github.com/free-audio/clap-validator/releases/download/0.3.2/clap-validator-0.3.2-macos-universal.tar.gz"
           tar xf clap-validator.tar.gz
-          chmod +x clap-validator
+          chmod +x binaries/clap-validator
 
       - name: Run clap-validator
-        run: ./clap-validator validate "build/Dukko_artefacts/Release/CLAP/Dukko.clap"
+        run: ./binaries/clap-validator validate "build/Dukko_artefacts/Release/CLAP/Dukko.clap"
 
       # ---- LICENSES.md staleness guard (QUAL-05 ongoing protection) -----------
       # Every directory under build/_deps/ must have a row in LICENSES.md.
