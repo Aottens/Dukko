@@ -31,7 +31,11 @@ Audio-thread discipline (no allocations, no locks, no denormals, smoothed parame
   2. The plugin name, manufacturer code, CMake target, plugin manifest, and binary names all read "Dukko" — no "KickstartClone" or "Pamplejuce" leftovers.
   3. Every push to GitHub triggers a `macos-14` Actions job that builds VST3 + CLAP and runs pluginval at strictness level 10 against the VST3 bundle; the badge is green.
   4. `LICENSES.md` exists at repo root and lists JUCE 8, clap-juce-extensions, chowdsp_utils, plus any other dependency pulled in via CPM.
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 01-01-PLAN.md — Pamplejuce ingestion + Dukko rename + bake permanent identifiers (BUILD-01, BUILD-05)
+- [ ] 01-02-PLAN.md — CPM dep wiring (JUCE 8.0.12, clap-juce-extensions @ SHA, chowdsp_utils v2.4.0) + LICENSES.md (BUILD-03, QUAL-05)
+- [ ] 01-03-PLAN.md — GitHub Actions workflow: Release+validators job + Debug+ASan job (BUILD-04, QUAL-01)
+- [ ] 01-04-PLAN.md — Local build + arm64 verification + GitHub repo + first push + manual Bitwig load (BUILD-02)
 
 ### Phase 2: DSP scaffold & state recall
 **Goal**: An audio-thread-safe passthrough plugin with depth, wet/dry, and click-free soft bypass, where Bitwig save → close → reopen restores every parameter exactly.
@@ -100,7 +104,7 @@ Audio-thread discipline (no allocations, no locks, no denormals, smoothed parame
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Build foundation & CI | 0/0 | Not started | — |
+| 1. Build foundation & CI | 0/4 | Planned | — |
 | 2. DSP scaffold & state recall | 0/0 | Not started | — |
 | 3. Tempo-sync engine with atomic curve snapshot | 0/0 | Not started | — |
 | 4. Curve UI & factory presets | 0/0 | Not started | — |

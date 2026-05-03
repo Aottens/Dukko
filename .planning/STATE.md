@@ -1,3 +1,17 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: Roadmap created, ready for `/gsd-plan-phase 1`
+last_updated: "2026-05-03T09:46:28.878Z"
+progress:
+  total_phases: 6
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
+---
+
 # State: Dukko
 
 **Last updated:** 2026-05-03
@@ -68,6 +82,7 @@
 **Next action:** Run `/gsd-plan-phase 1` to generate the plan(s) for Phase 1 (Build foundation & CI).
 
 **Resume hint for new sessions:**
+
 - Read `.planning/PROJECT.md` for product context
 - Read `.planning/REQUIREMENTS.md` for v1 scope and traceability
 - Read `.planning/ROADMAP.md` for phase structure and success criteria
