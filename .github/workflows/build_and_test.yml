@@ -59,7 +59,7 @@ jobs:
           submodules: recursive
 
       - name: Cache CPM sources
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/CPM
           key: ${{ runner.os }}-cpm-${{ hashFiles('**/CMakeLists.txt', '**/cmake/*.cmake') }}
@@ -175,7 +175,7 @@ jobs:
           submodules: recursive
 
       - name: Cache CPM sources
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/CPM
           key: ${{ runner.os }}-cpm-${{ hashFiles('**/CMakeLists.txt', '**/cmake/*.cmake') }}
