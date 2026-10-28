@@ -4,6 +4,14 @@ Append-only. Newest at top. Each entry: date, decision, alternatives, why, rever
 
 ---
 
+## 2026-10-28 — One task per session; owner runs ask explicitly (owner)
+
+**Decision:** the session and test-run rules of CMDMX apply here (CLAUDE.md *Sessions*, *Owner test runs*): one task per session in its own worktree, explicit "Test nodig" requests with [Claude]/[Jij] steps and a step counter.
+
+**Reasoning:** these lived in CMDMX's Claude memory, not in its CLAUDE.md, so the reset did not carry them over; the owner had to point both out (an unannounced test, several tasks in one session).
+
+**Reversal trigger:** the owner changes the rule.
+
 ## 2026-10-28 — Reset onto the CMDMX way of working (owner)
 
 **Decision:** the repo is stripped to a lean JUCE skeleton (one `CMakeLists.txt`, `FetchContent`,
