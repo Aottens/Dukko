@@ -19,9 +19,10 @@ Talk to the owner in **Dutch**; write code, comments, specs and commits in **Eng
 4. **Review.** One branch and one PR per task on `github.com/Aottens/Dukko`; the owner reviews
    and merges (gate 2). Anything only a DAW can show (loads in Bitwig, state recall, no clicks
    by ear) ships with a checklist in `tests/manual/` that only the owner can tick (gate 3).
-5. **Close the loop.** Update `STATE.md`, `BACKLOG.md` and `README.md` in the same PR. In the
-   README, a new feature goes under *What works today*; `## Status` is rewritten, never appended
-   to, at most 8 lines (checked). A decision made along the way goes in `DECISIONS.md`.
+5. **Close the loop.** Update `STATE.md`, `BACKLOG.md` and `README.md` in the same PR. The
+   README stays a README for users: a new feature goes under *What works today*; `## Status` is
+   rewritten, never appended to, at most 8 lines (checked), with no task ids or changelog prose
+   (those live in STATE and BACKLOG). A decision made along the way goes in `DECISIONS.md`.
    **Merged = done:** the PR sets its own `BACKLOG.md` row to `done (date, #PR)`, or
    `gate3: <checklist path>` when only the owner's DAW run is left; never `review`/`merged`.
    Open points found in a run go under `## Open points` in the run file
@@ -33,6 +34,29 @@ Talk to the owner in **Dutch**; write code, comments, specs and commits in **Eng
    `git fetch --prune && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D`.
 
 Use the `project-orchestrator` agent in `.claude/agents/` for pre-flight and post-flight checks.
+
+## Sessions (owner rules, carried over from CMDMX)
+
+- **One task per session.** After a task's PR is merged, do not start the next task in the same
+  session: update STATE/BACKLOG, then offer the next task as a new session with a
+  self-contained brief (task id, criteria, files to read, this loop). Avoids context rot.
+- **A session that writes code gets its own worktree** (`use_worktree: true`). Never check out
+  or pull in the owner's checkout while another session works there; do the step-6 cleanup only
+  when no linked session is working in that folder.
+- **Session actions stay in this project:** archive or clean up only sessions whose working
+  folder is this repo (or its worktrees). On a bulk action that goes wrong, stop and ask.
+
+## Owner test runs (gate 3)
+
+- **Ask explicitly.** A run the owner must do is its own section in the message ("Test nodig"),
+  with numbered steps, what to look or listen for and how to report back; never a path mentioned
+  in a recap. It is also the question of the turn.
+- **Few steps for the owner.** Tag checklist steps **[Claude]** (setup, building, copying
+  plugins, cache resets, repeats, anything a script or computer use can do) or **[Jij]** (the
+  5–8 steps that need ears or teach the feature). Walk the owner only through the [Jij] steps.
+- **Progress counter.** Every step message shows where the run stands: "Stap 3/5".
+- The owner answers per step (ok / fout + what they saw); Claude writes the run file in
+  `tests/manual/runs/` with `## Open points`.
 
 ## Ideas intake
 
