@@ -1,10 +1,48 @@
 #include "PluginProcessor.h"
 
+static juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    for (auto [id, name] : { std::pair { "depth", "Depth" }, std::pair { "mix", "Mix" } })
+        layout.add (std::make_unique<juce::AudioParameterFloat> (
+            juce::ParameterID { id, 1 }, name, juce::NormalisableRange<float> (0.0f, 100.0f), 100.0f,
+            juce::AudioParameterFloatAttributes().withLabel ("%")));
+    return layout;
+}
+
 PluginProcessor::PluginProcessor()
     : AudioProcessor (BusesProperties()
                           .withInput ("Input", juce::AudioChannelSet::stereo(), true)
-                          .withOutput ("Output", juce::AudioChannelSet::stereo(), true))
+                          .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
+      apvts (*this, nullptr, "DukkoState", createLayout())
 {
+    depthParam = apvts.getRawParameterValue ("depth");
+    mixParam = apvts.getRawParameterValue ("mix");
+}
+
+void PluginProcessor::updateTargets()
+{
+    duck.setTargets (depthParam->load() / 100.0f, mixParam->load() / 100.0f);
+}
+
+void PluginProcessor::prepareToPlay (double sampleRate, int)
+{
+    updateTargets();
+    duck.prepare (sampleRate);
+}
+
+void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+{
+    juce::ScopedNoDenormals noDenormals;
+    updateTargets();
+
+    const auto numChannels = buffer.getNumChannels();
+    for (int i = 0; i < buffer.getNumSamples(); ++i)
+    {
+        const auto g = duck.next (0.0f); // the curve arrives in a later task
+        for (int ch = 0; ch < numChannels; ++ch)
+            buffer.getWritePointer (ch)[i] *= g;
+    }
 }
 
 bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -19,17 +57,17 @@ juce::AudioProcessorEditor* PluginProcessor::createEditor()
     return new juce::GenericAudioProcessorEditor (*this);
 }
 
-// clap-validator reads state back in small chunks and fails on an empty stream,
-// so even without parameters we write a named tree.
 void PluginProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     juce::MemoryOutputStream stream (destData, false);
-    juce::ValueTree ("DukkoState").writeToStream (stream);
+    apvts.copyState().writeToStream (stream);
 }
 
 void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    juce::ValueTree::readFromData (data, static_cast<size_t> (sizeInBytes));
+    auto tree = juce::ValueTree::readFromData (data, static_cast<size_t> (sizeInBytes));
+    if (tree.isValid() && tree.hasType ("DukkoState"))
+        apvts.replaceState (tree);
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

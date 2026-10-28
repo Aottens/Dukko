@@ -1,5 +1,6 @@
 #pragma once
 
+#include <dsp/Duck.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 
 class PluginProcessor : public juce::AudioProcessor
@@ -7,10 +8,10 @@ class PluginProcessor : public juce::AudioProcessor
 public:
     PluginProcessor();
 
-    void prepareToPlay (double, int) override {}
+    void prepareToPlay (double sampleRate, int) override;
     void releaseResources() override {}
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override {}
+    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override { return true; }
@@ -31,5 +32,12 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    void updateTargets();
+
+    juce::AudioProcessorValueTreeState apvts;
+    std::atomic<float>* depthParam = nullptr;
+    std::atomic<float>* mixParam = nullptr;
+    dsp::Duck duck;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
