@@ -1,4 +1,5 @@
 #include <PluginProcessor.h>
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE ("build_05_plugin_is_named_dukko")
@@ -17,6 +18,6 @@ TEST_CASE ("build_06_passthrough_leaves_audio_untouched")
             buffer.setSample (ch, i, 0.5f);
     juce::MidiBuffer midi;
     plugin.processBlock (buffer, midi);
-    CHECK (buffer.getMagnitude (0, 256) == 0.5f);
-    CHECK (buffer.getRMSLevel (1, 0, 256) == 0.5f);
+    CHECK (buffer.getMagnitude (0, 256) == Catch::Approx (0.5f));
+    CHECK (buffer.getRMSLevel (1, 0, 256) == Catch::Approx (0.5f));
 }
