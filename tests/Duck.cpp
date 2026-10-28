@@ -47,3 +47,29 @@ TEST_CASE ("dsp_05_depth_and_mix_ramp_linearly_over_20_ms")
         CHECK (duck.next (1.0f) == Catch::Approx (0.0f).margin (1.0e-5));
     }
 }
+
+static bool exactly (float a, float b) { return ! (a < b || a > b); }
+
+TEST_CASE ("dsp_04_bypass_crossfades_over_10_ms")
+{
+    for (bool toBypassed : { true, false })
+    {
+        dsp::Duck duck;
+        duck.setTargets (1.0f, 1.0f);
+        duck.setBypassed (! toBypassed);
+        duck.prepare (48000.0);
+        float previous = duck.next (1.0f);
+        CHECK (exactly (previous, toBypassed ? 0.0f : 1.0f)); // no ramp right after prepare
+
+        duck.setBypassed (toBypassed);
+        float gain = previous;
+        for (int i = 0; i < 480; ++i)
+        {
+            gain = duck.next (1.0f);
+            CHECK (std::abs (gain - previous) <= 1.0f / 480.0f + 1.0e-6f);
+            previous = gain;
+        }
+        CHECK (exactly (gain, toBypassed ? 1.0f : 0.0f));
+        CHECK (exactly (duck.next (1.0f), toBypassed ? 1.0f : 0.0f));
+    }
+}
