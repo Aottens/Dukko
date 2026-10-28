@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build, test, validate (macOS arm64)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: build/_deps
+          key: deps-${{ hashFiles('CMakeLists.txt') }}
+      - run: brew install ninja
+      - run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      # 3 cores on the runner; unbounded JUCE builds run out of memory.
+      - run: cmake --build build --parallel 3
+      - run: ctest --test-dir build --output-on-failure
+      - name: arm64 binaries (BUILD-02)
+        run: |
+          lipo -archs build/Dukko_artefacts/Release/VST3/Dukko.vst3/Contents/MacOS/Dukko | grep -w arm64
+          lipo -archs build/Dukko_artefacts/Release/CLAP/Dukko.clap/Contents/MacOS/Dukko | grep -w arm64
+      - name: pluginval strictness 10 (QUAL-01)
+        run: |
+          curl -sL -o pluginval.zip https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_macOS.zip
+          unzip -q pluginval.zip
+          pluginval.app/Contents/MacOS/pluginval --strictness-level 10 --validate-in-process \
+            build/Dukko_artefacts/Release/VST3/Dukko.vst3
+      - name: clap-validator
+        run: |
+          curl -sL https://github.com/free-audio/clap-validator/releases/download/0.3.2/clap-validator-0.3.2-macos-universal.tar.gz | tar xz
+          binaries/clap-validator validate build/Dukko_artefacts/Release/CLAP/Dukko.clap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Dukko-plugins
+          path: |
+            build/Dukko_artefacts/Release/VST3/Dukko.vst3
+            build/Dukko_artefacts/Release/CLAP/Dukko.clap
+          retention-days: 30
