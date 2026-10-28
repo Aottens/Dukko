@@ -22,7 +22,7 @@ static void checkPercentParameter (const juce::String& id)
 TEST_CASE ("stat_01_parameter_ids_have_version_1")
 {
     PluginProcessor plugin;
-    for (auto id : { "depth", "mix" })
+    for (auto id : { "depth", "mix", "bypass" })
     {
         auto* p = findParameter (plugin, id);
         REQUIRE (p != nullptr);
@@ -38,4 +38,14 @@ TEST_CASE ("dsp_02_depth_parameter_is_0_to_100_percent_default_100")
 TEST_CASE ("dsp_03_mix_parameter_is_0_to_100_percent_default_100")
 {
     checkPercentParameter ("mix");
+}
+
+TEST_CASE ("dsp_04_bypass_is_the_host_bypass_parameter_default_off")
+{
+    PluginProcessor plugin;
+    auto* bypass = plugin.getBypassParameter();
+    REQUIRE (bypass != nullptr);
+    CHECK (bypass == findParameter (plugin, "bypass"));
+    CHECK (bypass->getValue() < 0.5f);
+    CHECK (plugin.getLatencySamples() == 0);
 }
