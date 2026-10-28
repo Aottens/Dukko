@@ -20,6 +20,7 @@ public:
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
+    juce::AudioProcessorParameter* getBypassParameter() const override { return bypassParameter; }
 
     // Hosts cope badly with zero programs.
     int getNumPrograms() override { return 1; }
@@ -37,6 +38,8 @@ private:
     juce::AudioProcessorValueTreeState apvts;
     std::atomic<float>* depthParam = nullptr;
     std::atomic<float>* mixParam = nullptr;
+    std::atomic<float>* bypassParam = nullptr;
+    juce::AudioProcessorParameter* bypassParameter = nullptr;
     dsp::Duck duck;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)

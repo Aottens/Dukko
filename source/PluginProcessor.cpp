@@ -7,6 +7,7 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
         layout.add (std::make_unique<juce::AudioParameterFloat> (
             juce::ParameterID { id, 1 }, name, juce::NormalisableRange<float> (0.0f, 100.0f), 100.0f,
             juce::AudioParameterFloatAttributes().withLabel ("%")));
+    layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { "bypass", 1 }, "Bypass", false));
     return layout;
 }
 
@@ -18,11 +19,14 @@ PluginProcessor::PluginProcessor()
 {
     depthParam = apvts.getRawParameterValue ("depth");
     mixParam = apvts.getRawParameterValue ("mix");
+    bypassParam = apvts.getRawParameterValue ("bypass");
+    bypassParameter = apvts.getParameter ("bypass");
 }
 
 void PluginProcessor::updateTargets()
 {
     duck.setTargets (depthParam->load() / 100.0f, mixParam->load() / 100.0f);
+    duck.setBypassed (bypassParam->load() >= 0.5f);
 }
 
 void PluginProcessor::prepareToPlay (double sampleRate, int)

@@ -4,26 +4,30 @@
 
 namespace dsp
 {
-// Gain = 1 - mix * depth * curve, with depth and mix ramped linearly over 20 ms.
+// Gain = 1 - (1 - bypass) * mix * depth * curve; depth and mix ramp linearly over 20 ms, bypass over 10 ms.
 class Duck
 {
 public:
     void setTargets (float depth, float mix)
     {
-        retarget (depthRamp, depth);
-        retarget (mixRamp, mix);
+        retarget (depthRamp, depth, rampSamples);
+        retarget (mixRamp, mix, rampSamples);
     }
+
+    void setBypassed (bool bypassed) { retarget (bypassRamp, bypassed ? 1.0f : 0.0f, bypassRampSamples); }
 
     void prepare (double sampleRate)
     {
         rampSamples = static_cast<int> (std::lround (0.02 * sampleRate));
+        bypassRampSamples = static_cast<int> (std::lround (0.01 * sampleRate));
         depthRamp.snap();
         mixRamp.snap();
+        bypassRamp.snap();
     }
 
     float next (float curve)
     {
-        return 1.0f - mixRamp.advance() * depthRamp.advance() * curve;
+        return 1.0f - (1.0f - bypassRamp.advance()) * mixRamp.advance() * depthRamp.advance() * curve;
     }
 
 private:
@@ -43,18 +47,18 @@ private:
         }
     };
 
-    void retarget (Ramp& r, float value) const
+    static void retarget (Ramp& r, float value, int length)
     {
         if (! (value < r.target || value > r.target)) // same target: keep the running ramp
             return;
         r.start = r.current;
         r.target = value;
-        r.total = r.remaining = rampSamples;
-        if (rampSamples <= 0)
+        r.total = r.remaining = length;
+        if (length <= 0)
             r.snap();
     }
 
-    Ramp depthRamp, mixRamp;
-    int rampSamples = 0;
+    Ramp depthRamp, mixRamp, bypassRamp;
+    int rampSamples = 0, bypassRampSamples = 0;
 };
 } // namespace dsp
