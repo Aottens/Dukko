@@ -12,7 +12,7 @@ Status (first word of the Status cell, checked by `scripts/check-tracking.py` in
 
 | Id | Task (one sentence, verifiable) | Spec ids | Size | Status |
 | --- | --- | --- | --- | --- |
-| VS0-01 | The stripped skeleton builds VST3 + CLAP and passes `ctest` locally and in CI (pluginval 10, clap-validator), and the owner sees Dukko load and pass audio in Bitwig. | BUILD-01..06, QUAL-01 | S | gate3: `tests/manual/bitwig-load.md` |
+| VS0-01 | The stripped skeleton builds VST3 + CLAP and passes `ctest` locally and in CI (pluginval 10, clap-validator), and the owner sees Dukko load and pass audio in Bitwig. | BUILD-01..06, QUAL-01 | S | done (2026-10-28, #6; run `tests/manual/runs/2026-10-28-VS0-01.md`) |
 
 ## Slice 1 — parameters, bypass and state recall (PRD 2)
 
@@ -21,6 +21,7 @@ Status (first word of the Status cell, checked by `scripts/check-tracking.py` in
 | VS1-01 | Depth and wet/dry exist as host parameters with permanent string ids, smoothed, and a test shows a step in either produces no jump larger than the smoothing allows. | DSP-02, 03, 05, STAT-01 | M | done (2026-10-28, #7) |
 | VS1-02 | Bypass is the host's bypass parameter and crossfades over 5–10 ms; a test shows no sample jump on toggle. | DSP-04 | S | todo |
 | VS1-03 | State is versioned (`<DukkoState version="1">`), load is idempotent and has a migration hook; Bitwig save → close → reopen restores every parameter (checklist). | STAT-02, 05, 06, STAT-04 | M | todo |
+| VS1-05 | Depth and Mix show their value as a whole percentage with a unit (`30 %`) in the host and the generic editor, and typing `30` sets 30 %; a test checks the text in both directions. | DSP-02, 03 | S | todo |
 | VS1-04 | `processBlock` runs under `ScopedNoDenormals`, a debug-build guard fails a test on any allocation in it, and CI has an ASan build that runs the tests. | DSP-06, 07 | M | todo |
 
 ## Slice 2 — tempo sync on a fixed curve (PRD 3)
