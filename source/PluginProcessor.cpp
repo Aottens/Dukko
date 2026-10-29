@@ -31,6 +31,7 @@ PluginProcessor::PluginProcessor()
     bypassParam = apvts.getRawParameterValue ("bypass");
     divisionParam = apvts.getRawParameterValue ("division");
     bypassParameter = apvts.getParameter ("bypass");
+    curve.publish (dsp::Curve::sine());
     apvts.state.setProperty ("version", stateVersion, nullptr);
 }
 
@@ -45,6 +46,7 @@ void PluginProcessor::prepareToPlay (double sampleRate, int)
     updateTargets();
     duck.prepare (sampleRate);
     sync.prepare (sampleRate);
+    curve.prepare (sampleRate);
 }
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
@@ -65,10 +67,11 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     sync.setBlock (transport, juce::roundToInt (divisionParam->load()));
     duck.setActive (sync.isActive());
 
+    curve.beginBlock();
     const auto numChannels = buffer.getNumChannels();
     for (int i = 0; i < buffer.getNumSamples(); ++i)
     {
-        const auto g = duck.next (dsp::sineCurve (sync.phase (i)));
+        const auto g = duck.next (curve.next (sync.phase (i)));
         for (int ch = 0; ch < numChannels; ++ch)
             buffer.getWritePointer (ch)[i] *= g;
     }
