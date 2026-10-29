@@ -4,14 +4,15 @@ Tempo-synced volume ducking for Bitwig on Apple Silicon, as VST3 and CLAP. Drop 
 pick a curve, get a tight, musical pump locked to the host tempo.
 
 ## Status
-Early v1. Dukko loads in Bitwig as CLAP and VST3 and has Depth, Mix and Bypass, but does not
-duck yet: the tempo-synced curve comes next, after readable parameter values and versioned
-state recall. Plan in `BACKLOG.md`, handoff in `STATE.md`.
+Early v1. Dukko loads in Bitwig as CLAP and VST3 and has Depth, Mix and Bypass with readable
+values, but does not duck yet: the tempo-synced curve comes next, after versioned state recall.
+Plan in `BACKLOG.md`, handoff in `STATE.md`.
 
 ## What works today
 - Builds as native arm64 VST3 and CLAP and installs itself into `~/Library/Audio/Plug-Ins/`.
 - Passes audio through unchanged.
-- Depth and Mix (0–100 %) as automatable host parameters, ramped over 20 ms, saved with the project.
+- Depth and Mix (0–100 %) as automatable host parameters, ramped over 20 ms, saved with the project; they read
+  `30 %` and typing `30` sets 30 %.
 - Bypass as the plugin's own host bypass, crossfading over 10 ms.
 
 ## Build and run

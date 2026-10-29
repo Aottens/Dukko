@@ -6,7 +6,13 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
     for (auto [id, name] : { std::pair { "depth", "Depth" }, std::pair { "mix", "Mix" } })
         layout.add (std::make_unique<juce::AudioParameterFloat> (
             juce::ParameterID { id, 1 }, name, juce::NormalisableRange<float> (0.0f, 100.0f), 100.0f,
-            juce::AudioParameterFloatAttributes().withLabel ("%")));
+            juce::AudioParameterFloatAttributes()
+                .withStringFromValueFunction ([] (float v, int) { return juce::String (juce::roundToInt (v)) + " %"; })
+                .withValueFromStringFunction ([] (const juce::String& text) {
+                    const auto t = text.trimStart();
+                    return t.initialSectionContainingOnly ("+-.0123456789").containsAnyOf ("0123456789")
+                               ? juce::jlimit (0.0f, 100.0f, t.getFloatValue()) : 100.0f;
+                })));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { "bypass", 1 }, "Bypass", false));
     return layout;
 }
