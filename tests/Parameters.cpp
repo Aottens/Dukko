@@ -84,5 +84,5 @@ TEST_CASE ("sync_02_division_parameter_has_13_permanent_entries_default_quarter"
     CHECK (division->choices == juce::StringArray { "1/1", "1/2", "1/2.", "1/2T", "1/4", "1/4.", "1/4T",
                                                     "1/8", "1/8.", "1/8T", "1/16", "1/16.", "1/16T" });
     CHECK (division->getIndex() == 4);
-    CHECK (division->convertFrom0to1 (division->getDefaultValue()) == Catch::Approx (4.0f));
+    CHECK (division->convertFrom0to1 (findParameter (plugin, "division")->getDefaultValue()) == Catch::Approx (4.0f));
 }

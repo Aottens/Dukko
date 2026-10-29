@@ -14,6 +14,9 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
                                ? juce::jlimit (0.0f, 100.0f, t.getFloatValue()) : 100.0f;
                 })));
     layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID { "bypass", 1 }, "Bypass", false));
+    layout.add (std::make_unique<juce::AudioParameterChoice> (
+        juce::ParameterID { "division", 1 }, "Division",
+        juce::StringArray { "1/1", "1/2", "1/2.", "1/2T", "1/4", "1/4.", "1/4T", "1/8", "1/8.", "1/8T", "1/16", "1/16.", "1/16T" }, 4));
     return layout;
 }
 
