@@ -1,10 +1,14 @@
 #pragma once
 
 #include <cmath>
+#include <numbers>
 
 namespace dsp
 {
-// Gain = 1 - (1 - bypass) * mix * depth * curve; depth and mix ramp linearly over 20 ms, bypass over 10 ms.
+// Raised cosine over one cycle: 1 at phase 0, 0 at phase 0.5 (DSP-01).
+inline float sineCurve (double phase) { return static_cast<float> (0.5 * (1.0 + std::cos (2.0 * std::numbers::pi * phase))); }
+
+// Gain = 1 - (1 - bypass) * active * mix * depth * curve; depth and mix ramp linearly over 20 ms, bypass and active over 10 ms.
 class Duck
 {
 public:
@@ -16,6 +20,8 @@ public:
 
     void setBypassed (bool bypassed) { retarget (bypassRamp, bypassed ? 1.0f : 0.0f, bypassRampSamples); }
 
+    void setActive (bool active) { retarget (activeRamp, active ? 1.0f : 0.0f, bypassRampSamples); }
+
     void prepare (double sampleRate)
     {
         rampSamples = static_cast<int> (std::lround (0.02 * sampleRate));
@@ -23,11 +29,12 @@ public:
         depthRamp.snap();
         mixRamp.snap();
         bypassRamp.snap();
+        activeRamp.snap();
     }
 
     float next (float curve)
     {
-        return 1.0f - (1.0f - bypassRamp.advance()) * mixRamp.advance() * depthRamp.advance() * curve;
+        return 1.0f - (1.0f - bypassRamp.advance()) * activeRamp.advance() * mixRamp.advance() * depthRamp.advance() * curve;
     }
 
 private:
@@ -58,7 +65,7 @@ private:
             r.snap();
     }
 
-    Ramp depthRamp, mixRamp, bypassRamp;
+    Ramp depthRamp, mixRamp, bypassRamp, activeRamp;
     int rampSamples = 0, bypassRampSamples = 0;
 };
 } // namespace dsp

@@ -1,4 +1,5 @@
 #include "AllocationGuard.h"
+#include "FakePlayHead.h"
 #include <PluginProcessor.h>
 #include <catch2/catch_test_macros.hpp>
 #include <atomic>
@@ -39,7 +40,9 @@ TEST_CASE ("dsp_06_allocation_guard_counts_only_armed_thread")
 
 TEST_CASE ("dsp_06_process_block_does_not_allocate")
 {
+    FakePlayHead head;
     PluginProcessor plugin;
+    plugin.setPlayHead (&head);
     plugin.prepareToPlay (48000.0, 256);
     juce::AudioBuffer<float> buffer (2, 256);
     juce::MidiBuffer midi;
@@ -50,6 +53,9 @@ TEST_CASE ("dsp_06_process_block_does_not_allocate")
         set (plugin, "depth", static_cast<float> (block % 7) / 6.0f);
         set (plugin, "mix", static_cast<float> (block % 5) / 4.0f);
         set (plugin, "bypass", block % 10 < 5 ? 0.0f : 1.0f);
+        set (plugin, "division", static_cast<float> (block % 13) / 12.0f);
+        head.playing = block % 20 < 15;
+        head.ppq = block * 0.1;
 
         const int sizes[] = { 256, 1, 37 };
         buffer.setSize (2, sizes[block % 3], false, false, true);

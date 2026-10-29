@@ -29,6 +29,7 @@ PluginProcessor::PluginProcessor()
     depthParam = apvts.getRawParameterValue ("depth");
     mixParam = apvts.getRawParameterValue ("mix");
     bypassParam = apvts.getRawParameterValue ("bypass");
+    divisionParam = apvts.getRawParameterValue ("division");
     bypassParameter = apvts.getParameter ("bypass");
     apvts.state.setProperty ("version", stateVersion, nullptr);
 }
@@ -43,6 +44,7 @@ void PluginProcessor::prepareToPlay (double sampleRate, int)
 {
     updateTargets();
     duck.prepare (sampleRate);
+    sync.prepare (sampleRate);
 }
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
@@ -50,10 +52,23 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     juce::ScopedNoDenormals noDenormals;
     updateTargets();
 
+    dsp::Transport transport;
+    if (auto* playHead = getPlayHead())
+        if (const auto position = playHead->getPosition())
+        {
+            if (const auto ppq = position->getPpqPosition())
+                transport.ppq = *ppq;
+            if (const auto bpm = position->getBpm())
+                transport.bpm = *bpm;
+            transport.playing = position->getIsPlaying();
+        }
+    sync.setBlock (transport, juce::roundToInt (divisionParam->load()));
+    duck.setActive (sync.isActive());
+
     const auto numChannels = buffer.getNumChannels();
     for (int i = 0; i < buffer.getNumSamples(); ++i)
     {
-        const auto g = duck.next (0.0f); // the curve arrives in a later task
+        const auto g = duck.next (dsp::sineCurve (sync.phase (i)));
         for (int ch = 0; ch < numChannels; ++ch)
             buffer.getWritePointer (ch)[i] *= g;
     }

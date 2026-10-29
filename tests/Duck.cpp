@@ -7,6 +7,7 @@ static float settledGain (float depth, float mix, float curve)
 {
     dsp::Duck duck;
     duck.setTargets (depth, mix);
+    duck.setActive (true); // these criteria hold while the sync is active (DSP-01)
     duck.prepare (48000.0);
     return duck.next (curve);
 }
@@ -31,6 +32,7 @@ TEST_CASE ("dsp_05_depth_and_mix_ramp_linearly_over_20_ms")
     {
         dsp::Duck duck;
         duck.setTargets (which == 0 ? 0.0f : 1.0f, which == 0 ? 1.0f : 0.0f);
+        duck.setActive (true); // these criteria hold while the sync is active (DSP-01)
         duck.prepare (48000.0);
         float previous = duck.next (1.0f);
         CHECK (previous == Catch::Approx (1.0f)); // no ramp right after prepare
@@ -57,6 +59,7 @@ TEST_CASE ("dsp_04_bypass_crossfades_over_10_ms")
         dsp::Duck duck;
         duck.setTargets (1.0f, 1.0f);
         duck.setBypassed (! toBypassed);
+        duck.setActive (true); // these criteria hold while the sync is active (DSP-01)
         duck.prepare (48000.0);
         float previous = duck.next (1.0f);
         CHECK (exactly (previous, toBypassed ? 0.0f : 1.0f)); // no ramp right after prepare
