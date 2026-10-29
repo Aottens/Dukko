@@ -15,7 +15,7 @@ static double shape (double t, double u) { return (std::exp (10.0 * t * u) - 1.0
 
 TEST_CASE ("curv_01_no_points_is_zero_one_point_is_flat")
 {
-    CHECK (Curve {}.value (0.3) == 0.0f);
+    CHECK (Curve {}.value (0.3) == Catch::Approx (0.0f).epsilon (0.0));
     CHECK (flat (0.7f).value (0.0) == Catch::Approx (0.7f));
     CHECK (flat (0.7f).value (0.9) == Catch::Approx (0.7f));
 }
@@ -48,7 +48,7 @@ TEST_CASE ("curv_01_tension_shapes_the_segment")
 TEST_CASE ("curv_01_out_of_range_values_clamp")
 {
     CHECK (flat (2.0f).value (0.5) == Catch::Approx (1.0f));
-    CHECK (flat (-1.0f).value (0.5) == 0.0f);
+    CHECK (flat (-1.0f).value (0.5) == Catch::Approx (0.0f).epsilon (0.0));
     const Curve steep { { { 0.0f, 0.0f, 3.0f }, { 0.5f, 1.0f, 0.0f } } };
     CHECK (steep.value (0.25) == Catch::Approx (shape (1.0, 0.5)));
 }
@@ -76,7 +76,7 @@ TEST_CASE ("curv_02_snapshot_renders_1024_entries_and_interpolates")
     snapshot.render (sine);
     REQUIRE (snapshot.lut.size() == 1024);
     for (int i = 0; i < 1024; ++i)
-        CHECK (snapshot.lut[(size_t) i] == sine.value (i / 1024.0));
+        CHECK (snapshot.lut[(size_t) i] == Catch::Approx (sine.value (i / 1024.0)).epsilon (0.0));
 
     double worst = 0.0;
     for (int i = 0; i < 10000; ++i)
@@ -114,14 +114,14 @@ TEST_CASE ("curv_02_no_torn_snapshot_across_threads")
         feed.beginBlock();
         const auto first = feed.next (0.0);
         for (int i = 1; i < 1024; ++i)
-            if (feed.next (i / 1024.0) != first)
+            if (std::abs (feed.next (i / 1024.0) - first) > 0.0f)
                 ++torn;
     }
     writer.join();
     CHECK (torn == 0);
     CHECK (reads > 0);
     feed.beginBlock();
-    CHECK (feed.next (0.5) == 1.0f); // the last publish arrived
+    CHECK (feed.next (0.5) == Catch::Approx (1.0f).epsilon (0.0)); // the last publish arrived
 }
 
 TEST_CASE ("curv_03_crossfade_over_10_ms")
@@ -147,8 +147,8 @@ TEST_CASE ("curv_03_crossfade_over_10_ms")
         CHECK (value >= previous);
         previous = value;
     }
-    CHECK (value == 1.0f);
-    CHECK (feed.next (0.3) == 1.0f);
+    CHECK (value == Catch::Approx (1.0f).epsilon (0.0));
+    CHECK (feed.next (0.3) == Catch::Approx (1.0f).epsilon (0.0));
 
     feed.beginBlock(); // now the newest one, 0.25, fades in
     for (int i = 0; i < 480; ++i)
@@ -158,5 +158,5 @@ TEST_CASE ("curv_03_crossfade_over_10_ms")
         CHECK (value <= previous);
         previous = value;
     }
-    CHECK (value == 0.25f);
+    CHECK (value == Catch::Approx (0.25f).epsilon (0.0));
 }

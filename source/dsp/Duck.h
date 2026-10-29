@@ -1,13 +1,9 @@
 #pragma once
 
 #include <cmath>
-#include <numbers>
 
 namespace dsp
 {
-// Raised cosine over one cycle: 1 at phase 0, 0 at phase 0.5 (DSP-01).
-inline float sineCurve (double phase) { return static_cast<float> (0.5 * (1.0 + std::cos (2.0 * std::numbers::pi * phase))); }
-
 // Gain = 1 - (1 - bypass) * active * mix * depth * curve; depth and mix ramp linearly over 20 ms, bypass and active over 10 ms.
 class Duck
 {
