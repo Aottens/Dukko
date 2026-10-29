@@ -33,6 +33,8 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    static constexpr int stateVersion = 1;
+
     void updateTargets();
 
     juce::AudioProcessorValueTreeState apvts;

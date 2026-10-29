@@ -15,9 +15,9 @@ static void checkPercentParameter (const juce::String& id)
     PluginProcessor plugin;
     auto* p = findParameter (plugin, id);
     REQUIRE (p != nullptr);
-    CHECK (p->getNormalisableRange().start == 0.0f);
-    CHECK (p->getNormalisableRange().end == 100.0f);
-    CHECK (p->convertFrom0to1 (p->getDefaultValue()) == 100.0f);
+    CHECK (p->getNormalisableRange().start == Catch::Approx (0.0f));
+    CHECK (p->getNormalisableRange().end == Catch::Approx (100.0f));
+    CHECK (p->convertFrom0to1 (p->getDefaultValue()) == Catch::Approx (100.0f));
 }
 
 TEST_CASE ("stat_01_parameter_ids_have_version_1")

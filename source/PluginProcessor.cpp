@@ -27,6 +27,7 @@ PluginProcessor::PluginProcessor()
     mixParam = apvts.getRawParameterValue ("mix");
     bypassParam = apvts.getRawParameterValue ("bypass");
     bypassParameter = apvts.getParameter ("bypass");
+    apvts.state.setProperty ("version", stateVersion, nullptr);
 }
 
 void PluginProcessor::updateTargets()
@@ -73,11 +74,30 @@ void PluginProcessor::getStateInformation (juce::MemoryBlock& destData)
     apvts.copyState().writeToStream (stream);
 }
 
+// One step per version; a newer version than ours is loaded best-effort.
+static void migrate (juce::ValueTree& tree, int current)
+{
+    for (int version = tree.getProperty ("version", 0); version < current; ++version)
+    {
+        if (version == 0)
+            continue; // 0 -> 1: same layout, the version attribute was just missing
+    }
+}
+
 void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     auto tree = juce::ValueTree::readFromData (data, static_cast<size_t> (sizeInBytes));
-    if (tree.isValid() && tree.hasType ("DukkoState"))
-        apvts.replaceState (tree);
+    if (! tree.isValid() || ! tree.hasType ("DukkoState"))
+        return;
+
+    migrate (tree, stateVersion);
+    for (auto* p : getParameters())
+        if (auto* ranged = dynamic_cast<juce::RangedAudioParameter*> (p))
+        {
+            const auto value = tree.getChildWithProperty ("id", ranged->getParameterID()).getProperty ("value");
+            ranged->setValueNotifyingHost (value.isVoid() ? ranged->getDefaultValue()
+                                                          : ranged->convertTo0to1 (static_cast<float> (value)));
+        }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
