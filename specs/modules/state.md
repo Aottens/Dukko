@@ -14,7 +14,7 @@ misread raises `version` and adds a migration step (STAT-06).
 ## Acceptance criteria
 
 - **STAT-01** Every host parameter has a string id and version hint 1 (`juce::ParameterID {id, 1}`); ids so far: `depth`, `mix`, `bypass`. An id never changes or gets reused once released.
-- **STAT-02** Saved state is a `DukkoState` tree with `version="1"` and one `PARAM` child per parameter (`depth`, `mix`, `bypass`) holding its current value; loading it into a fresh instance restores every parameter value exactly.
+- **STAT-02** Saved state is a `DukkoState` tree with `version="1"` and one `PARAM` child per parameter (`depth`, `mix`, `bypass`) holding its current value; loading it into a fresh instance restores every parameter value (to float precision).
 - **STAT-03** Factory curves serialize by index (not embedded), so future factory updates ship transparently (draft).
 - **STAT-04** In Bitwig, as CLAP and as VST3: set depth, mix and bypass away from their defaults, save, close the project, reopen it: all three values are back. A project saved before VS1-03 (no `version`) opens with its values. (Manual checklist; extended with curve, A/B and sync state when those exist.)
 - **STAT-05** Loading is deterministic and idempotent: the same data gives the same parameter values and the same saved state whatever the instance held before, and loading twice equals loading once. A parameter missing from the data, or without a value, gets its default; a value out of range is clamped to the range; unknown children and properties are ignored and dropped. Data that is not a `DukkoState` tree (empty, garbage, other type) changes nothing.
