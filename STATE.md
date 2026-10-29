@@ -17,13 +17,13 @@ tests under AddressSanitizer (VS1-04, DSP-06/07/10).
 `division` parameter (13 entries, default 1/4) and is inactive on unusable or stopped transport
 (VS2-01, SYNC-01/02/05). The processor reads the host play head into `dsp::Transport` and a
 fixed raised-cosine curve ducks per sample, fully in on each cycle start; the duck ramps in and
-out over 10 ms when the transport starts or stops (VS2-02, DSP-01). Dukko is audible from here.
+out over 10 ms when the transport starts or stops (VS2-02, DSP-01). Dukko is audible from here; the Bitwig run passed.
 
 ## Next
 1. VS2-03: the point-and-tension curve model, rendered to a LUT and swapped in lock-free (CURV-01..03).
 
 ## Waiting for a run in Bitwig (gate 3, owner)
-- VS2-02: `tests/manual/sine-duck.md` (pumps at 1/4, follows Division, stops with the transport).
+- none
 
 ## Blocked
 - none
