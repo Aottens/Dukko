@@ -69,13 +69,14 @@ TEST_CASE ("stat_02_saved_state_is_versioned_with_every_parameter")
     set (plugin, "depth", 30.0f);
     set (plugin, "mix", 70.0f);
     set (plugin, "bypass", 1.0f);
+    set (plugin, "division", 9.0f); // 1/8T
 
     const auto block = save (plugin);
     const auto tree = toTree (block);
     REQUIRE (tree.hasType ("DukkoState"));
     CHECK (static_cast<int> (tree.getProperty ("version", 0)) == 1);
-    CHECK (tree.getNumChildren() == 3);
-    for (auto [id, value] : { std::pair { "depth", 30.0f }, std::pair { "mix", 70.0f }, std::pair { "bypass", 1.0f } })
+    CHECK (tree.getNumChildren() == 4);
+    for (auto [id, value] : { std::pair { "depth", 30.0f }, std::pair { "mix", 70.0f }, std::pair { "bypass", 1.0f }, std::pair { "division", 9.0f } })
     {
         const auto child = tree.getChildWithProperty ("id", id);
         REQUIRE (child.isValid());
@@ -87,6 +88,7 @@ TEST_CASE ("stat_02_saved_state_is_versioned_with_every_parameter")
     CHECK (get (fresh, "depth") == Catch::Approx (30.0f));
     CHECK (get (fresh, "mix") == Catch::Approx (70.0f));
     CHECK (get (fresh, "bypass") == Catch::Approx (1.0f));
+    CHECK (get (fresh, "division") == Catch::Approx (9.0f));
 }
 
 TEST_CASE ("stat_05_load_is_deterministic_and_idempotent")
@@ -104,6 +106,7 @@ TEST_CASE ("stat_05_load_is_deterministic_and_idempotent")
     set (b, "depth", 10.0f);
     set (b, "mix", 30.0f);
     set (b, "bypass", 1.0f);
+    set (b, "division", 9.0f);
     load (a, block);
     load (b, block);
 
@@ -112,11 +115,12 @@ TEST_CASE ("stat_05_load_is_deterministic_and_idempotent")
         CHECK (get (*plugin, "depth") == Catch::Approx (100.0f));
         CHECK (get (*plugin, "mix") == Catch::Approx (100.0f));
         CHECK (get (*plugin, "bypass") == Catch::Approx (0.0f));
+        CHECK (get (*plugin, "division") == Catch::Approx (4.0f)); // missing: default 1/4
     }
     CHECK (save (a) == save (b));
 
     const auto saved = toTree (save (a));
-    CHECK (saved.getNumChildren() == 3);
+    CHECK (saved.getNumChildren() == 4);
     CHECK (! saved.hasProperty ("stranger"));
     CHECK (! saved.getChildWithProperty ("id", "future").isValid());
 

@@ -23,7 +23,7 @@ static void checkPercentParameter (const juce::String& id)
 TEST_CASE ("stat_01_parameter_ids_have_version_1")
 {
     PluginProcessor plugin;
-    for (auto id : { "depth", "mix", "bypass" })
+    for (auto id : { "depth", "mix", "bypass", "division" })
     {
         auto* p = findParameter (plugin, id);
         REQUIRE (p != nullptr);
@@ -74,4 +74,15 @@ TEST_CASE ("dsp_09_depth_and_mix_read_and_parse_whole_percent")
         CHECK (parse ("-5") == Catch::Approx (0.0f));
         CHECK (parse ("abc") == Catch::Approx (100.0f));
     }
+}
+
+TEST_CASE ("sync_02_division_parameter_has_13_permanent_entries_default_quarter")
+{
+    PluginProcessor plugin;
+    auto* division = dynamic_cast<juce::AudioParameterChoice*> (findParameter (plugin, "division"));
+    REQUIRE (division != nullptr);
+    CHECK (division->choices == juce::StringArray { "1/1", "1/2", "1/2.", "1/2T", "1/4", "1/4.", "1/4T",
+                                                    "1/8", "1/8.", "1/8T", "1/16", "1/16.", "1/16T" });
+    CHECK (division->getIndex() == 4);
+    CHECK (division->convertFrom0to1 (findParameter (plugin, "division")->getDefaultValue()) == Catch::Approx (4.0f));
 }
