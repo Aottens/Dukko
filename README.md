@@ -5,7 +5,7 @@ pick a curve, get a tight, musical pump locked to the host tempo.
 
 ## Status
 Early v1. Dukko loads in Bitwig as CLAP and VST3 and has Depth, Mix and Bypass with readable
-values, but does not duck yet: the tempo-synced curve comes next, after versioned state recall.
+values that survive saving the project, but does not duck yet: the tempo-synced curve comes next.
 Plan in `BACKLOG.md`, handoff in `STATE.md`.
 
 ## What works today
@@ -14,6 +14,7 @@ Plan in `BACKLOG.md`, handoff in `STATE.md`.
 - Depth and Mix (0–100 %) as automatable host parameters, ramped over 20 ms, saved with the project; they read
   `30 %` and typing `30` sets 30 %.
 - Bypass as the plugin's own host bypass, crossfading over 10 ms.
+- Every setting comes back when a project is reopened, including projects saved with earlier builds.
 
 ## Build and run
 
