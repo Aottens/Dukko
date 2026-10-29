@@ -22,7 +22,7 @@ Status (first word of the Status cell, checked by `scripts/check-tracking.py` in
 | VS1-02 | Bypass is the host's bypass parameter and crossfades over 5–10 ms; a test shows no sample jump on toggle. | DSP-04 | S | done (2026-10-28, #9; click check by ear in VS2-04) |
 | VS1-03 | State is versioned (`<DukkoState version="1">`), load is idempotent and has a migration hook; Bitwig save → close → reopen restores every parameter (checklist). | STAT-02, 05, 06, STAT-04 | M | done (2026-10-29, #12; run `tests/manual/runs/2026-10-29-VS1-03.md`) |
 | VS1-05 | Depth and Mix show their value as a whole percentage with a unit (`30 %`) in the host and the generic editor, and typing `30` sets 30 %; a test checks the text in both directions. | DSP-09 | S | done (2026-10-29, #11; run `tests/manual/runs/2026-10-29-VS1-05.md`) |
-| VS1-04 | `processBlock` runs under `ScopedNoDenormals`, a debug-build guard fails a test on any allocation in it, and CI has an ASan build that runs the tests. | DSP-06, 07, 10 | M | todo |
+| VS1-04 | `processBlock` runs under `ScopedNoDenormals`, a debug-build guard fails a test on any allocation in it, and CI has an ASan build that runs the tests. | DSP-06, 07, 10 | M | done (2026-10-29, #13) |
 
 ## Slice 2 — tempo sync on a fixed curve (PRD 3)
 
