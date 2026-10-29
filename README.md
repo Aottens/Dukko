@@ -22,7 +22,8 @@ Plan in `BACKLOG.md`, handoff in `STATE.md`.
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build build && ctest --test-dir build
 ```
 
-Rescan plugins in Bitwig to pick up the new build.
+Rescan plugins in Bitwig to pick up the new build. For an AddressSanitizer build of the tests, add
+`-DCMAKE_BUILD_TYPE=Debug -DDUKKO_ASAN=ON` in a separate build directory.
 
 ## How work happens
 Spec → test → code → review, one task per PR; see `CLAUDE.md`. Scope: `specs/PRD.md`.
