@@ -44,3 +44,19 @@ jobs:
             build/Dukko_artefacts/Release/VST3/Dukko.vst3
             build/Dukko_artefacts/Release/CLAP/Dukko.clap
           retention-days: 30
+
+  asan:
+    name: tests under AddressSanitizer (macOS arm64)
+    runs-on: macos-14
+    env:
+      ASAN_OPTIONS: halt_on_error=1:abort_on_error=1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: build-asan/_deps
+          key: deps-asan-${{ hashFiles('CMakeLists.txt') }}
+      - run: brew install ninja
+      - run: cmake -B build-asan -G Ninja -DCMAKE_BUILD_TYPE=Debug -DDUKKO_ASAN=ON
+      - run: cmake --build build-asan --target Tests --parallel 3
+      - run: ctest --test-dir build-asan --output-on-failure

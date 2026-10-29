@@ -1,8 +1,8 @@
 #include "AllocationGuard.h"
 #include <PluginProcessor.h>
 #include <catch2/catch_test_macros.hpp>
+#include <atomic>
 #include <cmath>
-#include <memory>
 #include <thread>
 
 static void set (juce::AudioProcessor& plugin, const juce::String& id, float value0to1)
@@ -12,17 +12,28 @@ static void set (juce::AudioProcessor& plugin, const juce::String& id, float val
             ranged->setValueNotifyingHost (value0to1);
 }
 
+// Escapes through a volatile pointer, so the compiler cannot elide the new/delete pair.
+static void allocateOne()
+{
+    static int* volatile sink = nullptr;
+    sink = new int (1);
+    delete sink;
+}
+
 TEST_CASE ("dsp_06_allocation_guard_counts_only_armed_thread")
 {
     {
         AllocationGuard guard;
-        auto p = std::make_unique<int> (1);
+        allocateOne();
         CHECK (guard.count() == 1);
     }
 
-    auto unguarded = std::make_unique<int> (2); // disarmed: must not count anywhere
+    allocateOne(); // disarmed: must not count anywhere
+    std::atomic<bool> go { false };
+    std::thread other ([&] { while (! go) {} allocateOne(); }); // created before the guard: std::thread allocates
     AllocationGuard guard;
-    std::thread ([] { auto q = std::make_unique<int> (3); }).join();
+    go = true;
+    other.join();
     CHECK (guard.count() == 0);
 }
 
