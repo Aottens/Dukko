@@ -30,5 +30,5 @@ Status (first word of the Status cell, checked by `scripts/check-tracking.py` in
 | --- | --- | --- | --- | --- |
 | VS2-01 | `dsp/` derives the curve phase from PPQ and a sync division (straight, dotted, triplet) per block, guarded against `bpm < 1` and no play head, tested with fake transport. | SYNC-01, 02, 05 | M | done (2026-10-29, #14) |
 | VS2-02 | A fixed sine curve ducks the audio by depth at the derived phase; a test checks the gain at known PPQ positions; the processor reads the host play head into `dsp::Transport`. | DSP-01 | S | done (2026-10-29, #15; run `tests/manual/runs/2026-10-29-VS2-02.md`) |
-| VS2-03 | The curve is a point-and-tension model rendered to a 1024-sample LUT and handed to the audio thread by atomic snapshot swap with a crossfade on change. | CURV-01, 02, 03 | L | todo |
+| VS2-03 | The curve is a point-and-tension model rendered to a 1024-sample LUT and handed to the audio thread by atomic snapshot swap with a crossfade on change. | CURV-01, 02, 03 | L | done (2026-10-29, #16) |
 | VS2-04 | Owner run in Bitwig: five minutes without drift, loops, jumps and tempo automation without clicks; toggling Dukko's Bypass and Bitwig's device on/off mid-duck gives no click; Division comes back after save and reopen. | SYNC-03, 04, DSP-04, STAT-04 | S | todo |
