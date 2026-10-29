@@ -1,6 +1,6 @@
 # Module spec: dsp (DSP)
 
-Status: **DSP-02, 03, 05 approved 2026-10-28 (VS1-01), DSP-04 approved 2026-10-28 (VS1-02), DSP-09 approved 2026-10-28 (VS1-05), DSP-06, 07, 10 approved 2026-10-29 (VS1-04)**; the rest is a draft carried over from the 2026-05-03 requirements, approved when its task starts (gate 1).
+Status: **DSP-02, 03, 05 approved 2026-10-28 (VS1-01), DSP-04 approved 2026-10-28 (VS1-02), DSP-09 approved 2026-10-28 (VS1-05), DSP-06, 07, 10 approved 2026-10-29 (VS1-04), DSP-01 approved 2026-10-29 (VS2-02)**; the rest is a draft carried over from the 2026-05-03 requirements, approved when its task starts (gate 1).
 
 ## Definitions
 - **Curve value** `c` ∈ [0, 1]: how far the duck is in at the current phase (1 = fully ducked). From VS2-02 on it is the fixed sine of DSP-01; VS2-03 replaces it with the user curve.
