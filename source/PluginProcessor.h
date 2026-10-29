@@ -1,6 +1,7 @@
 #pragma once
 
 #include <dsp/Duck.h>
+#include <dsp/Sync.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 
 class PluginProcessor : public juce::AudioProcessor
@@ -40,9 +41,11 @@ private:
     juce::AudioProcessorValueTreeState apvts;
     std::atomic<float>* depthParam = nullptr;
     std::atomic<float>* mixParam = nullptr;
+    std::atomic<float>* divisionParam = nullptr;
     std::atomic<float>* bypassParam = nullptr;
     juce::AudioProcessorParameter* bypassParameter = nullptr;
     dsp::Duck duck;
+    dsp::Sync sync;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
