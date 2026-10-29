@@ -1,5 +1,6 @@
 #include "FakePlayHead.h"
 #include <PluginProcessor.h>
+#include <dsp/Curve.h>
 #include <dsp/Duck.h>
 #include <dsp/Sync.h>
 #include <catch2/catch_approx.hpp>
@@ -21,16 +22,16 @@ static float gainAt (double ppq, int sample, float depth = 1.0f)
     REQUIRE (sync.isActive());
     float g = 1.0f;
     for (int i = 0; i <= sample; ++i)
-        g = duck.next (dsp::sineCurve (sync.phase (i)));
+        g = duck.next (dsp::Curve::sine().value (sync.phase (i)));
     return g;
 }
 
 TEST_CASE ("dsp_01_sine_is_fully_ducked_on_the_beat")
 {
-    CHECK (dsp::sineCurve (0.0) == Catch::Approx (1.0f));
-    CHECK (dsp::sineCurve (0.25) == Catch::Approx (0.5f));
-    CHECK (dsp::sineCurve (0.5) == Catch::Approx (0.0f).margin (1.0e-6));
-    CHECK (dsp::sineCurve (0.75) == Catch::Approx (0.5f));
+    CHECK (dsp::Curve::sine().value (0.0) == Catch::Approx (1.0f));
+    CHECK (dsp::Curve::sine().value (0.25) == Catch::Approx (0.5f));
+    CHECK (dsp::Curve::sine().value (0.5) == Catch::Approx (0.0f).margin (1.0e-6));
+    CHECK (dsp::Curve::sine().value (0.75) == Catch::Approx (0.5f));
 }
 
 TEST_CASE ("dsp_01_gain_at_known_ppq_positions")
@@ -58,7 +59,7 @@ TEST_CASE ("dsp_01_activity_ramps_over_10_ms")
         float previous = playing ? 1.0f : 0.0f, gain = previous;
         for (int i = 0; i < 480; ++i)
         {
-            gain = duck.next (dsp::sineCurve (sync.phase (i)));
+            gain = duck.next (dsp::Curve::sine().value (sync.phase (i)));
             CHECK (std::abs (gain - previous) <= 1.0f / 480.0f + 1.0e-6f);
             previous = gain;
         }

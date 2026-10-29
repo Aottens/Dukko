@@ -1,6 +1,6 @@
 # Module spec: curve (CURV)
 
-Status: **CURV-01, 02, 03 proposed 2026-10-29 (VS2-03), awaiting owner approval**; the rest is a draft carried over from the 2026-05-03 requirements; the owner approves each criterion when its task starts (gate 1).
+Status: **CURV-01, 02, 03 approved 2026-10-29 (VS2-03)**; the rest is a draft carried over from the 2026-05-03 requirements; the owner approves each criterion when its task starts (gate 1).
 
 ## Definitions
 - **Curve value** `c` ∈ [0, 1] at phase `p` ∈ [0, 1): how far the duck is in (1 = fully ducked), as in `dsp.md`.
