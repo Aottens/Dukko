@@ -53,6 +53,12 @@ target_link_libraries(DukkoCode INTERFACE
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags)
 
+option(DUKKO_ASAN "Build with AddressSanitizer" OFF)
+if(DUKKO_ASAN)
+    target_compile_options(DukkoCode INTERFACE -fsanitize=address -fno-omit-frame-pointer)
+    target_link_options(DukkoCode INTERFACE -fsanitize=address)
+endif()
+
 target_link_libraries(Dukko PRIVATE DukkoCode)
 
 enable_testing()
