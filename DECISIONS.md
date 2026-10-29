@@ -4,6 +4,16 @@ Append-only. Newest at top. Each entry: date, decision, alternatives, why, rever
 
 ---
 
+## 2026-10-29 — Curve handoff is a triple buffer; curve state waits for CURV-05 (VS2-03, owner approved CURV-01..03)
+
+**Decision:** the "atomic pointer swap" of the carried-over decision is a triple buffer: three LUT snapshots held inline in `dsp::CurveFeed`, exchanged through one lock-free `std::atomic<int>`; the newest publish wins and the audio thread keeps its own copy of the old LUT for the 10 ms crossfade. The curve model is plain data; it enters the saved state with the user curve (CURV-05), not now.
+
+**Alternatives considered:** `std::atomic<Snapshot*>` with old snapshots freed on the message thread after the audio thread acknowledges them; `std::atomic<std::shared_ptr>` (not lock-free in libc++).
+
+**Reasoning:** no heap and no reclamation scheme: nothing to free, so nothing can be freed on the audio thread. 16 KB per instance is cheap. Without an editor nothing changes the curve yet, so saving it would be untested state.
+
+**Reversal trigger:** snapshots grow large enough that copies matter, or several curves must be live at once.
+
 ## 2026-10-28 — One task per session; owner runs ask explicitly (owner)
 
 **Decision:** the session and test-run rules of CMDMX apply here (CLAUDE.md *Sessions*, *Owner test runs*): one task per session in its own worktree, explicit "Test nodig" requests with [Claude]/[Jij] steps and a step counter.

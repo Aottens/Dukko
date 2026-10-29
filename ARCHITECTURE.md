@@ -9,7 +9,7 @@
  play head (PPQ, bpm, playing) ──►  phase = f(PPQ, division)      ▲
  parameter changes ──► APVTS atomics ──► smoothed values ─────────┤
                                                                   │
- editor (message thread) ── edits curve ──► new CurveSnapshot ──► atomic swap (lock-free)
+ editor (message thread) ── edits curve ──► new CurveSnapshot ──► triple buffer (lock-free)
 ```
 
 ## Layers
@@ -23,7 +23,7 @@
 ## Threads
 - Audio thread: `processBlock` only; the rules in `CLAUDE.md` apply.
 - Message thread: editor and state load/save. Talks to the audio thread through parameter
-  atomics and an immutable curve snapshot behind an atomic pointer.
+  atomics and curve snapshots in a lock-free triple buffer (`dsp::CurveFeed`).
 
 ## Dependencies
 JUCE 8.0.12 (Personal licence), clap-juce-extensions (MIT, pinned SHA), Catch2 3.8.1 (BSL-1.0,

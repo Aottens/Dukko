@@ -1,6 +1,6 @@
 # Dukko — State
 
-_Last updated: 2026-10-29 (VS2-02 sine duck)_
+_Last updated: 2026-10-29 (VS2-03 curve model)_
 
 This file is the handoff: where we are, what is next, what waits. It is not a log.
 
@@ -18,9 +18,13 @@ tests under AddressSanitizer (VS1-04, DSP-06/07/10).
 (VS2-01, SYNC-01/02/05). The processor reads the host play head into `dsp::Transport` and a
 fixed raised-cosine curve ducks per sample, fully in on each cycle start; the duck ramps in and
 out over 10 ms when the transport starts or stops (VS2-02, DSP-01). Dukko is audible from here; the Bitwig run passed.
+The curve is now a point-and-tension model (`source/dsp/Curve.h`), rendered to a 1024-entry LUT and
+handed to the audio thread through a lock-free triple buffer with a 10 ms crossfade on change; the
+default `Curve::sine()` stands in for the fixed cosine (VS2-03, CURV-01..03). Nothing publishes a new
+curve yet; the click check by ear comes with the editor (UI-07).
 
 ## Next
-1. VS2-03: the point-and-tension curve model, rendered to a LUT and swapped in lock-free (CURV-01..03).
+1. VS2-04: the owner's Bitwig run for drift, loops, tempo automation and bypass clicks (SYNC-03, 04, DSP-04, STAT-04).
 
 ## Waiting for a run in Bitwig (gate 3, owner)
 - none
@@ -29,4 +33,4 @@ out over 10 ms when the transport starts or stops (VS2-02, DSP-01). Dukko is aud
 - none
 
 ## Owner decisions open
-- The module specs are carried over unreviewed; each is approved when its first task starts.
+- The module specs are carried over unreviewed; each is approved when its first task starts (curve: CURV-01..03 approved 2026-10-29).
